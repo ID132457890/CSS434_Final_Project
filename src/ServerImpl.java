@@ -9,8 +9,7 @@ import java.rmi.server.UnicastRemoteObject;
 @SuppressWarnings("serial")
 public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
-	public static final String SERVER_RMI_SERVICE_NAME = "dfs_server";
-	
+	public static final String CLIENT_RMI_SERVICE_NAME = "fileclient";
 	
 	// required no-args constructor
 	public ServerImpl() throws RemoteException {}
@@ -35,7 +34,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 			ServerInterface server = new ServerImpl(); 
 			
 			// register server process with RMI service directory
-			Naming.rebind(SERVER_RMI_SERVICE_NAME, server);
+			Naming.rebind(RMI_SERVICE_NAME, server);
 			
 			
 		}
