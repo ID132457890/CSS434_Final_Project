@@ -1,6 +1,8 @@
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of Distributed File System Server
@@ -10,10 +12,14 @@ import java.rmi.server.UnicastRemoteObject;
 public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	public static final String CLIENT_RMI_SERVICE_NAME = "fileclient";
+
+	// the files/clients being hosted by this server
+	private Map<String, HostedFile> hostedFiles = new HashMap<String, HostedFile>();
+	
 	
 	// required no-args constructor
 	public ServerImpl() throws RemoteException {}
-
+	
 	@Override
 	public FileContents download(String clientIPName, String filename, String mode) {
 		// TODO Auto-generated method stub
@@ -35,7 +41,6 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 			
 			// register server process with RMI service directory
 			Naming.rebind(RMI_SERVICE_NAME, server);
-			
 			
 		}
 		catch (Exception e) {
