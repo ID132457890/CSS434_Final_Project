@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
  */
 public interface ServerInterface extends Remote {
 
-	public static final String RMI_SERVICE_NAME = "dfs_server";
+	public static final String RMI_SERVICE_NAME = "fileserver";
 	
 	/**
 	 * Download a file from the DFS server
