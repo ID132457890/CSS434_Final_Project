@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
  * Public API for Distributed File System Server functionality
  *
  */
-public interface DistributedFileSystemServer extends Remote {
+public interface ServerInterface extends Remote {
 
 	public static final String RMI_SERVICE_NAME = "dfs_server";
 	

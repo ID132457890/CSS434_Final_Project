@@ -7,13 +7,13 @@ import java.rmi.server.UnicastRemoteObject;
  *
  */
 @SuppressWarnings("serial")
-public class DistributedFileSystemServerImpl extends UnicastRemoteObject implements DistributedFileSystemServer {
+public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 
 	public static final String SERVER_RMI_SERVICE_NAME = "dfs_server";
 	
 	
 	// required no-args constructor
-	public DistributedFileSystemServerImpl() throws RemoteException {}
+	public ServerImpl() throws RemoteException {}
 
 	@Override
 	public FileContents download(String clientIPName, String filename, String mode) {
@@ -32,7 +32,7 @@ public class DistributedFileSystemServerImpl extends UnicastRemoteObject impleme
 		try {
 			
 			// should always instantiate via interface
-			DistributedFileSystemServer server = new DistributedFileSystemServerImpl(); 
+			ServerInterface server = new ServerImpl(); 
 			
 			// register server process with RMI service directory
 			Naming.rebind(SERVER_RMI_SERVICE_NAME, server);
