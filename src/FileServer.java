@@ -46,8 +46,13 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 		// this client wants to obtain ownership of the file for writing
 		if (mode.equalsIgnoreCase(ServerInterface.WRITE_MODE)) {
 			
-			file.registerOwner(clientIPName, port);
-			return file.getFileContents();
+			boolean registerSuccess = file.registerOwner(clientIPName, port);
+			
+			if (registerSuccess) {
+				return file.getFileContents();
+			} else {
+				return null;
+			}
 			
 		}
 		

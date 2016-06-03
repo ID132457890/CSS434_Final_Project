@@ -140,8 +140,9 @@ public class HostedFile {
 	 * A client would like to be registered as "owner" of the file
 	 * @param clientIPName The hostname or IP address of the owning client
 	 * @param port The port number the client is accepting requests on
+	 * @return Operation success (TRUE) or failure (FALSE)
 	 */
-	public void registerOwner(String clientIPName, int port) {
+	public boolean registerOwner(String clientIPName, int port) {
 		
 		// is there an owner already?
 		ConnectedClient owner = getOwner();
@@ -153,7 +154,8 @@ public class HostedFile {
 			// register this client, write mode
 			registerClient(clientIPName, port, ServerFileState.WRITE_SHARED);
 			
-			return;
+			// success!
+			return true;
 			
 		}
 		
@@ -161,13 +163,17 @@ public class HostedFile {
 		fileState = ServerFileState.OWNERSHIP_CHANGE;
 		
 		// tell the owner to write back its' changes
-		//writebackall
+		boolean writebackSuccess = owner.writeback();
+		if (!writebackSuccess) return false;	// operation failed, file status indeterminate (retain)
 		
 		// take ownership now
 		fileState = ServerFileState.WRITE_SHARED;
 		
 		// register this client, write mode
 		registerClient(clientIPName, port, ServerFileState.WRITE_SHARED);
+		
+		// success!
+		return true;
 		
 	}
 	
