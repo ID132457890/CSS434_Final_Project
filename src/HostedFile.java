@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -71,7 +72,22 @@ public class HostedFile {
 	 * @param fileContents The new version of the file
 	 */
 	public void setFileContents(FileContents fileContents) {
-		this.fileContents = fileContents;
+	
+		try {
+			
+			// write back changes to file on filesystem
+			Files.write(file, fileContents.get(), new OpenOption[]{});
+
+			// set local file contents
+			this.fileContents = fileContents;
+
+		} catch (IOException e) {
+
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		
+		}
+	
 	}
 	
 	/**
