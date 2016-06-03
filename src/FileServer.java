@@ -12,7 +12,8 @@ import java.util.Map;
 public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
 	public static final String CLIENT_RMI_SERVICE_NAME = "fileclient";
-
+	private static final String RMI_URL_PREFIX = "rmi://localhost:";
+	
 	// the files/clients being hosted by this server
 	private Map<String, HostedFile> hostedFiles = new HashMap<String, HostedFile>();
 	
@@ -72,7 +73,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 			ServerInterface server = new FileServer(); 
 			
 			// register server process with RMI service directory
-			Naming.rebind(RMI_SERVICE_NAME, server);
+			Naming.rebind(RMI_URL_PREFIX + args[1] + "/" + RMI_SERVICE_NAME, server);
 			
 		}
 		catch (Exception e) {
