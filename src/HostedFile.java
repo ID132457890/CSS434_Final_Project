@@ -14,7 +14,7 @@ import java.util.Map;
 public class HostedFile {
 
 	// the actual file as it exists in the local filesystem
-	private Path file;
+	private Path file = null;
 	
 	// the representation as given to clients upon request/update
 	private FileContents fileContents = null;

@@ -53,5 +53,35 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 		}
 		
 	}
+	
+	/**
+	 * Get a file from cache or from the filesystem
+	 * @param filename The filename of the file to retrieve
+	 * @return The file, as a populated HostedFile class
+	 */
+	public HostedFile getFile(String filename) {
 
+		// filename provided?
+		if (filename == null || filename.length() == 0) return null;
+		
+		// in cache?
+		HostedFile returnFile = hostedFiles.get(filename);
+		
+		// not in cache - retrieve and populate from filesystem
+		if (returnFile == null) {
+			
+			returnFile = new HostedFile(filename);
+			
+			// was there a file by the specified name?
+			if (returnFile.getFileContents() == null || returnFile.getFileContents().get().length == 0) return null;
+			
+			// valid file - put into cache
+			hostedFiles.put(filename, returnFile);
+
+		}
+		
+		return returnFile;
+		
+	}
+	
 }
