@@ -17,9 +17,14 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 	// the files/clients being hosted by this server
 	private Map<String, HostedFile> hostedFiles = new HashMap<String, HostedFile>();
 	
+	private int port;
 	
 	// required no-args constructor
 	public FileServer() throws RemoteException {}
+	
+	public FileServer(int port) throws RemoteException {
+		this.port = port;
+	}
 	
 	@Override
 	public FileContents download(String clientIPName, String filename, String mode) {
@@ -33,7 +38,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 		// any client may get the file in read mode
 		if (mode.equalsIgnoreCase(ServerInterface.READ_MODE)) {
 			
-			file.registerReader(clientIPName);
+			file.registerReader(clientIPName, port);
 			return file.getFileContents();
 			
 		}
@@ -41,7 +46,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 		// this client wants to obtain ownership of the file for writing
 		if (mode.equalsIgnoreCase(ServerInterface.WRITE_MODE)) {
 			
-			file.registerOwner(clientIPName);
+			file.registerOwner(clientIPName, port);
 			return file.getFileContents();
 			
 		}
@@ -70,10 +75,10 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 		try {
 			
 			// should always instantiate via interface
-			ServerInterface server = new FileServer(); 
+			ServerInterface server = new FileServer(Integer.parseInt(args[0])); 
 			
 			// register server process with RMI service directory
-			Naming.rebind(RMI_URL_PREFIX + args[1] + "/" + RMI_SERVICE_NAME, server);
+			Naming.rebind(RMI_URL_PREFIX + args[0] + "/" + RMI_SERVICE_NAME, server);
 			
 		}
 		catch (Exception e) {

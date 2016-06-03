@@ -108,22 +108,24 @@ public class HostedFile {
 	/**
 	 * A client would like to be registered as a reader only
 	 * @param clientIPName The hostname or IP address of the client
+	 * @param port The port number the client is accepting requests on
 	 */
-	public void registerReader(String clientIPName) {
+	public void registerReader(String clientIPName, int port) {
 		
 		// update file state if this is the first client to register
 		if (fileState == ServerFileState.NOT_SHARED) fileState = ServerFileState.READ_SHARED;
 		
 		// register this client, read-only
-		registerClient(clientIPName, ServerFileState.READ_SHARED);
+		registerClient(clientIPName, port, ServerFileState.READ_SHARED);
 		
 	}
 	
 	/**
 	 * A client would like to be registered as "owner" of the file
 	 * @param clientIPName The hostname or IP address of the owning client
+	 * @param port The port number the client is accepting requests on
 	 */
-	public void registerOwner(String clientIPName) {
+	public void registerOwner(String clientIPName, int port) {
 		
 		// is there an owner already?
 		ConnectedClient owner = getOwner();
@@ -133,21 +135,27 @@ public class HostedFile {
 			fileState = ServerFileState.WRITE_SHARED;
 			
 			// register this client, write mode
-			registerClient(clientIPName, ServerFileState.WRITE_SHARED);
+			registerClient(clientIPName, port, ServerFileState.WRITE_SHARED);
 			
 			return;
 			
 		}
 		
 		// this client is not the owner
+		fileState = ServerFileState.OWNERSHIP_CHANGE;
 		
+		// tell the owner to write back its' changes
+		//writebackall
 		
+		// take ownership now
+		fileState = ServerFileState.WRITE_SHARED;
 		
-		
+		// register this client, write mode
+		registerClient(clientIPName, port, ServerFileState.WRITE_SHARED);
 		
 	}
 	
-	private void registerClient(String clientIPName, ServerFileState clientFileState) {
+	private void registerClient(String clientIPName, int port, ServerFileState clientFileState) {
 		
 		// if client is already using this file, get it
 		ConnectedClient client = clients.get(clientIPName);
@@ -155,8 +163,7 @@ public class HostedFile {
 		// client not using this file
 		if (client == null) {
 			
-			client = new ConnectedClient();
-			client.setClientIPName(clientIPName);
+			client = new ConnectedClient(clientIPName, port);
 			clients.put(clientIPName, client);
 			
 			
