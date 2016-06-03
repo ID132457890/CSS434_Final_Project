@@ -40,8 +40,8 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 		// this client wants to obtain ownership of the file for writing
 		if (mode.equalsIgnoreCase(ServerInterface.WRITE_MODE)) {
 			
-			
-			
+			file.registerOwner(clientIPName);
+			return file.getFileContents();
 			
 		}
 		

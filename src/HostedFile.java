@@ -51,14 +51,6 @@ public class HostedFile {
 	}
 
 	/**
-	 * Get clients that are currently using this file
-	 * @return
-	 */
-	public Map<String, ConnectedClient> getClients() {
-		return clients;
-	}
-
-	/**
 	 * Get the RMI-friendly representation of the file, for transmission to clients
 	 * @return The RMI file representation
 	 */
@@ -119,15 +111,60 @@ public class HostedFile {
 	 */
 	public void registerReader(String clientIPName) {
 		
-		// is this client already using this file?
-		if (clients.containsKey(clientIPName)) return;
+		// update file state if this is the first client to register
+		if (fileState == ServerFileState.NOT_SHARED) fileState = ServerFileState.READ_SHARED;
 		
-		// register this client
-		ConnectedClient client = new ConnectedClient();
-		client.setClientIPName(clientIPName);
-		client.setFileAccessMode(ServerFileState.READ_SHARED);
-		clients.put(clientIPName, client);
+		// register this client, read-only
+		registerClient(clientIPName, ServerFileState.READ_SHARED);
 		
+	}
+	
+	/**
+	 * A client would like to be registered as "owner" of the file
+	 * @param clientIPName The hostname or IP address of the owning client
+	 */
+	public void registerOwner(String clientIPName) {
+		
+		// is there an owner already?
+		ConnectedClient owner = getOwner();
+		if (owner == null) {
+			
+			// this client is now the owner
+			fileState = ServerFileState.WRITE_SHARED;
+			
+			// register this client, write mode
+			registerClient(clientIPName, ServerFileState.WRITE_SHARED);
+			
+			return;
+			
+		}
+		
+		// this client is not the owner
+		
+		
+		
+		
+		
+	}
+	
+	private void registerClient(String clientIPName, ServerFileState clientFileState) {
+		
+		// if client is already using this file, get it
+		ConnectedClient client = clients.get(clientIPName);
+		
+		// client not using this file
+		if (client == null) {
+			
+			client = new ConnectedClient();
+			client.setClientIPName(clientIPName);
+			clients.put(clientIPName, client);
+			
+			
+		}
+
+		// set access mode
+		client.setFileAccessMode(clientFileState);
+
 	}
 	
 }

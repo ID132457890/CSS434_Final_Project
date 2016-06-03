@@ -23,6 +23,8 @@ public class ServerImplTest {
 		// request a file for download, read-only
 		FileContents d = server.download("localhost", VALID_FILENAME, ServerInterface.READ_MODE);
 		
+		// request a file for download, as owner
+		FileContents e = server.download("localhost", VALID_FILENAME, ServerInterface.WRITE_MODE);
 		
 	}
 		
