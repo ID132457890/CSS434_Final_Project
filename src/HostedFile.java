@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * HostedFile represents a file that one or more Clients have requested. Also, the 
@@ -24,6 +25,9 @@ public class HostedFile {
 	
 	// a collection of clients that are currently using this file
 	private Map<String, ConnectedClient> clients = new HashMap<String, ConnectedClient>();
+	
+	// overall state of the file, initially "not shared"
+	private ServerFileState fileState = ServerFileState.NOT_SHARED;
 	
 	public HostedFile(String filename) {
 		
@@ -76,6 +80,54 @@ public class HostedFile {
 	 */
 	public void setFileContents(FileContents fileContents) {
 		this.fileContents = fileContents;
+	}
+	
+	/**
+	 * Get the access state of this file
+	 * @return The current state of the file
+	 */
+	public ServerFileState getState() {
+		return fileState;
+	}
+	
+	/**
+	 * Get the "owner" of this file. The file owner is the one (and only one!) that has
+	 * requested write privileges.
+	 * @return The owner of this file, or null if not owned
+	 */
+	public ConnectedClient getOwner() {
+		
+		for (Entry<String, ConnectedClient> client : clients.entrySet()) {
+			
+			ServerFileState clientState = client.getValue().getFileAccessMode();
+
+			// "write_shared" or "ownership_change" is an indication of ownership
+			if (clientState == ServerFileState.WRITE_SHARED || clientState == ServerFileState.OWNERSHIP_CHANGE) {
+				return client.getValue();
+			}
+			
+		}
+		
+		// no owner exists
+		return null;
+		
+	}
+	
+	/**
+	 * A client would like to be registered as a reader only
+	 * @param clientIPName The hostname or IP address of the client
+	 */
+	public void registerReader(String clientIPName) {
+		
+		// is this client already using this file?
+		if (clients.containsKey(clientIPName)) return;
+		
+		// register this client
+		ConnectedClient client = new ConnectedClient();
+		client.setClientIPName(clientIPName);
+		client.setFileAccessMode(ServerFileState.READ_SHARED);
+		clients.put(clientIPName, client);
+		
 	}
 	
 }

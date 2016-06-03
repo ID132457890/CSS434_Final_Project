@@ -22,8 +22,32 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 	
 	@Override
 	public FileContents download(String clientIPName, String filename, String mode) {
-		// TODO Auto-generated method stub
+
+		// get the referenced file
+		HostedFile file = getFile(filename);
+	
+		// valid filename?
+		if (file == null) return null;
+		
+		// any client may get the file in read mode
+		if (mode.equalsIgnoreCase(ServerInterface.READ_MODE)) {
+			
+			file.registerReader(clientIPName);
+			return file.getFileContents();
+			
+		}
+	
+		// this client wants to obtain ownership of the file for writing
+		if (mode.equalsIgnoreCase(ServerInterface.WRITE_MODE)) {
+			
+			
+			
+			
+		}
+		
+		// unrecognized mode
 		return null;
+	
 	}
 
 	@Override

@@ -8,7 +8,10 @@ import java.rmi.RemoteException;
 public interface ServerInterface extends Remote {
 
 	public static final String RMI_SERVICE_NAME = "fileserver";
-	
+
+	public static final String READ_MODE = "r";
+	public static final String WRITE_MODE = "w";
+
 	/**
 	 * Download a file from the DFS server
 	 * @param clientIPName The IP address or hostname of the client requesting the file
