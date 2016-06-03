@@ -9,7 +9,7 @@ import java.util.Map;
  *
  */
 @SuppressWarnings("serial")
-public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
+public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
 	public static final String CLIENT_RMI_SERVICE_NAME = "fileclient";
 
@@ -18,7 +18,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 	
 	
 	// required no-args constructor
-	public ServerImpl() throws RemoteException {}
+	public FileServer() throws RemoteException {}
 	
 	@Override
 	public FileContents download(String clientIPName, String filename, String mode) {
@@ -57,11 +57,19 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInterface {
 	}
 
 	public static void main(String[] args) {
-		
+
+		// need a single argument - the port to accept requests on
+        if (args.length != 1) {
+            
+        	System.out.println("usage: java FileServer port");
+            System.exit(-1);
+        
+        }
+
 		try {
 			
 			// should always instantiate via interface
-			ServerInterface server = new ServerImpl(); 
+			ServerInterface server = new FileServer(); 
 			
 			// register server process with RMI service directory
 			Naming.rebind(RMI_SERVICE_NAME, server);

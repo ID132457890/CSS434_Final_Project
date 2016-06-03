@@ -9,7 +9,7 @@ public class ServerImplTest {
 	
 	public static void main(String[] args) throws Exception {
 
-		ServerImpl server = new ServerImpl();
+		FileServer server = new FileServer();
 
 		// first call retrieves from filesystem
 		HostedFile a = server.getFile(VALID_FILENAME);
