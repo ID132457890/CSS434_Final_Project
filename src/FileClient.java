@@ -53,8 +53,8 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         while (true)
         {
             //Create a new thread for upload
-            WriteThread thread = new WriteThread();
-            thread.start();
+            //WriteThread thread = new WriteThread(this);
+            //thread.start();
 
             String fileName = "";
             String readWriteString = "";
@@ -70,7 +70,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 //Validate the name
                 if (fileName.equals(""))
                 {
-                    thread.kill();
+                    //thread.kill();
                     continue;
                 }
 
@@ -81,7 +81,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 //Validate the read write string
                 if (!readWriteString.equals("r") && !readWriteString.equals("w"))
                 {
-                    thread.kill();
+                    //thread.kill();
                     continue;
                 }
             }
@@ -91,7 +91,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             }
 
             //The user made a read/write, so thread not needed
-            thread.kill();
+            //thread.kill();
 
             //Check if the file exists
             if (!this.checkIfExists(fileName, readWriteString))
@@ -139,6 +139,13 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 
     public static void main(String[] args)
     {
+        /*try {
+            FileOutputStream stream = new FileOutputStream("/tmp/useraccount.txt");
+            stream.write(new byte[]{0, 100, 56});
+            //stream.flush();
+            stream.close();
+        } catch (Exception e)*/
+
         if (args.length != 2)
         {
             System.out.println("usage: java FileClient serverIP port");
@@ -159,6 +166,9 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         }
     }
 
+    /*
+        Check if the file needs to be downloaded again or not
+     */
     public synchronized boolean checkIfExists(String fileName, String readWrite)
     {
         if (!currentFileName.equals(fileName))
@@ -216,9 +226,17 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         try
         {
             //Download the file with rmi interface
-            fileContents = server.download(clientIP, fileName, readWrite);
 
-            return true;
+            FileContents fileC = server.download(clientIP, fileName, readWrite);
+
+            if (fileC != null)
+            {
+                fileContents = new FileContents(fileC.get());
+
+                return  true;
+            }
+
+            return false;
         }
         catch (RemoteException e)
         {
@@ -246,7 +264,12 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         try
         {
             //Upload through rmi
-            server.upload(clientIP, currentFileName, fileContents);
+            if (server.upload(clientIP, currentFileName, fileContents))
+            {
+                return true;
+            }
+
+            return false;
         }
         catch (RemoteException e)
         {
@@ -283,7 +306,18 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(params);
 
-            return true;
+            if (firstParamater.equals("emacs"))
+            {
+            }
+
+            process.waitFor();
+
+            System.out.println("Process exited with code = " + process.exitValue());
+
+            if (process.exitValue() == 0)
+            {
+                return true;
+            }
         }
         catch (Exception e)
         {
@@ -298,12 +332,8 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
          */
     public boolean showInEmacs(String readWrite)
     {
-        //Check if didn't execute correctly
-        if (!this.executeUnix("chmod", "600", "/tmp/useraccount.txt"))
-        {
-            return false;
-        }
-        else
+        //Change permission to read/write
+        if (this.executeUnix("chmod", "600", "/tmp/useraccount.txt"))
         {
             try
             {
@@ -352,13 +382,12 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                     catch (Exception e)
                     {
                         e.printStackTrace();
-                        return false;
                     }
                 }
             }
-
-            return false;
         }
+
+        return false;
     }
 
     //Enumeration to hold the file state
@@ -366,6 +395,10 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     {
         Invalid, ReadShared, WriteOwned, ReleaseOwnership;
     }
+
+
+
+
 
 
 
@@ -377,7 +410,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         private boolean running = false;
         private FileClient attachedClient = null;
 
-        public void WriteThread(FileClient client)
+        public WriteThread(FileClient client)
         {
             running = true;
 
@@ -388,7 +421,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         {
             while (running)
             {
-                //Keep checking if the file needs to be uplaoded
+                //Keep checking if the file needs to be uploaded
                 if (attachedClient.currentFileState == FileState.ReleaseOwnership)
                 {
                     attachedClient.upload();
