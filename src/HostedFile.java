@@ -31,6 +31,10 @@ public class HostedFile {
 	// overall state of the file, initially "not shared"
 	private ServerFileState fileState = ServerFileState.NOT_SHARED;
 	
+	/**
+	 * Instantiate a HostedFile, setting contents from the specified file
+	 * @param filename The filename of the file to read/track/manage
+	 */
 	public HostedFile(String filename) {
 		
 		// how the client referred to the file
@@ -46,10 +50,20 @@ public class HostedFile {
 
 		} catch (IOException e) {
 
-			// unable to read file contents!
+			// Unable to read file contents!
+			
+			// Swallowing exceptions is bad. But, in this case, what else to do?
 			
 		}
 			
+	}
+
+	/**
+	 * Remove a client associated with this file
+	 * @param clientIPName The hostname/IP address of the client to de-register
+	 */
+	public void deRegisterClient(String clientIPName) {
+		clients.remove(clientIPName);
 	}
 
 	/**
@@ -66,44 +80,6 @@ public class HostedFile {
 	 */
 	public String getFilename() {
 		return filename;
-	}
-
-	/**
-	 * Update the file, using the RMI representation from a client
-	 * @param fileContents The new version of the file
-	 */
-	public void setFileContents(FileContents fileContents) {
-	
-		try {
-			
-			// write back changes to file on filesystem
-			Files.write(file, fileContents.get(), new OpenOption[]{});
-
-			// set local file contents
-			this.fileContents = fileContents;
-			
-			// all clients must invalidate their cached copies
-			boolean invalidationSuccess = invalidateClients();
-			if (!invalidationSuccess) return;
-			
-			// this file is not shared any more
-			fileState = ServerFileState.NOT_SHARED;
-
-		} catch (IOException e) {
-
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		
-		}
-	
-	}
-	
-	/**
-	 * Get the access state of this file
-	 * @return The current state of the file
-	 */
-	public ServerFileState getState() {
-		return fileState;
 	}
 	
 	/**
@@ -130,18 +106,64 @@ public class HostedFile {
 	}
 	
 	/**
-	 * A client would like to be registered as a reader only
-	 * @param clientIPName The hostname or IP address of the client
-	 * @param port The port number the client is accepting requests on
+	 * Get the access state of this file
+	 * @return The current state of the file
 	 */
-	public void registerReader(String clientIPName, int port) {
+	public ServerFileState getState() {
+		return fileState;
+	}
+	
+	/**
+	 * Helper method that will inform all clients accessing this file that their
+	 * local copies are no longer valid (another client modified the file)
+	 * @return Operation success (TRUE) or failure (FALSE)
+	 */
+	private boolean invalidateClients() {
+
+		boolean operationSuccess = true;
 		
-		// update file state if this is the first client to register
-		if (fileState == ServerFileState.NOT_SHARED) fileState = ServerFileState.READ_SHARED;
+		// iterate over collection of connected clients
+		for (ConnectedClient fileClient : clients.values()) {
+			
+			// ... invalidate each
+			boolean invalidateSuccess = fileClient.invalidate();
+			
+			// update access mode for this client
+			if (!invalidateSuccess) {
+				fileClient.setFileAccessMode(ServerFileState.NOT_SHARED);
+				operationSuccess = false;	// this operation failed
+			}
+			
+		}
+
+		trimClients();
 		
-		// register this client, read-only
-		registerClient(clientIPName, port, ServerFileState.READ_SHARED);
+		return operationSuccess;
 		
+	}
+	
+	/**
+	 * Internal helper method for associating a client with this file
+	 * @param clientIPName The hostname/IP address of the client
+	 * @param port The port number the client is listening on for RMI requests
+	 * @param clientFileState The client-requested file access mode
+	 */
+	private void registerClient(String clientIPName, int port, ServerFileState clientFileState) {
+		
+		// if client is already using this file, get it
+		ConnectedClient client = clients.get(clientIPName);
+		
+		// client not using this file
+		if (client == null) {
+			
+			client = new ConnectedClient(clientIPName, port);
+			clients.put(clientIPName, client);
+			
+		}
+
+		// set access mode
+		client.setFileAccessMode(clientFileState);
+
 	}
 	
 	/**
@@ -184,58 +206,55 @@ public class HostedFile {
 		return true;
 		
 	}
+
+	/**
+	 * A client would like to be registered as a reader only
+	 * @param clientIPName The hostname or IP address of the client
+	 * @param port The port number the client is accepting requests on
+	 */
+	public void registerReader(String clientIPName, int port) {
+		
+		// update file state if this is the first client to register
+		if (fileState == ServerFileState.NOT_SHARED) fileState = ServerFileState.READ_SHARED;
+		
+		// register this client, read-only
+		registerClient(clientIPName, port, ServerFileState.READ_SHARED);
+		
+	}
 	
-	private void registerClient(String clientIPName, int port, ServerFileState clientFileState) {
+	/**
+	 * Update the file, using the RMI representation from a client
+	 * @param fileContents The new version of the file
+	 */
+	public void setFileContents(FileContents fileContents) {
+	
+		try {
+			
+			// write back changes to file on filesystem
+			Files.write(file, fileContents.get(), new OpenOption[]{});
+
+			// set local file contents
+			this.fileContents = fileContents;
+			
+			// all clients must invalidate their cached copies
+			boolean invalidationSuccess = invalidateClients();
+			if (!invalidationSuccess) return;
+			
+			// this file is not shared any more
+			fileState = ServerFileState.NOT_SHARED;
+
+		} catch (IOException e) {
+
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		
-		// if client is already using this file, get it
-		ConnectedClient client = clients.get(clientIPName);
-		
-		// client not using this file
-		if (client == null) {
-			
-			client = new ConnectedClient(clientIPName, port);
-			clients.put(clientIPName, client);
-			
-			
 		}
-
-		// set access mode
-		client.setFileAccessMode(clientFileState);
-
+	
 	}
 
 	/**
-	 * Remove a client associated with this file
-	 * @param clientIPName The hostname/IP address of the client to de-register
+	 * Helper method to remove clients that are no longer accessing this file
 	 */
-	public void deRegisterClient(String clientIPName) {
-		clients.remove(clientIPName);
-	}
-	
-	private boolean invalidateClients() {
-
-		boolean operationSuccess = true;
-		
-		// iterate over collection of connected clients
-		for (ConnectedClient fileClient : clients.values()) {
-			
-			// ... invalidate each
-			boolean invalidateSuccess = fileClient.invalidate();
-			
-			// update access mode for this client
-			if (!invalidateSuccess) {
-				fileClient.setFileAccessMode(ServerFileState.NOT_SHARED);
-				operationSuccess = false;	// this operation failed
-			}
-			
-		}
-
-		trimClients();
-		
-		return operationSuccess;
-		
-	}
-	
 	private void trimClients() {
 		
 		// iterate through all connected clients
