@@ -375,13 +375,13 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     private class WriteThread extends Thread
     {
         private boolean running = false;
-        private FileManager attachedManager = null;
+        private FileClient attachedClient = null;
 
-        public void WriteThread(FileManager fm)
+        public void WriteThread(FileClient client)
         {
             running = true;
 
-            attachedManager = fm;
+            attachedClient = client;
         }
 
         public void run()
@@ -389,9 +389,9 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             while (running)
             {
                 //Keep checking if the file needs to be uplaoded
-                if (attachedManager.currentFileState == FileState.ReleaseOwnership)
+                if (attachedClient.currentFileState == FileState.ReleaseOwnership)
                 {
-                    attachedManager.upload();
+                    attachedClient.upload();
                 }
             }
         }
