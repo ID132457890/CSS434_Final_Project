@@ -4,6 +4,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -80,6 +81,13 @@ public class HostedFile {
 
 			// set local file contents
 			this.fileContents = fileContents;
+			
+			// all clients must invalidate their cached copies
+			boolean invalidationSuccess = invalidateClients();
+			if (!invalidationSuccess) return;
+			
+			// this file is not shared any more
+			fileState = ServerFileState.NOT_SHARED;
 
 		} catch (IOException e) {
 
@@ -194,6 +202,52 @@ public class HostedFile {
 		// set access mode
 		client.setFileAccessMode(clientFileState);
 
+	}
+
+	/**
+	 * Remove a client associated with this file
+	 * @param clientIPName The hostname/IP address of the client to de-register
+	 */
+	public void deRegisterClient(String clientIPName) {
+		clients.remove(clientIPName);
+	}
+	
+	private boolean invalidateClients() {
+
+		boolean operationSuccess = true;
+		
+		// iterate over collection of connected clients
+		for (ConnectedClient fileClient : clients.values()) {
+			
+			// ... invalidate each
+			boolean invalidateSuccess = fileClient.invalidate();
+			
+			// update access mode for this client
+			if (!invalidateSuccess) {
+				fileClient.setFileAccessMode(ServerFileState.NOT_SHARED);
+				operationSuccess = false;	// this operation failed
+			}
+			
+		}
+
+		trimClients();
+		
+		return operationSuccess;
+		
+	}
+	
+	private void trimClients() {
+		
+		// iterate through all connected clients
+		Iterator<ConnectedClient> fileClients = clients.values().iterator();
+		while (fileClients.hasNext()) {
+		
+			// ... and remove those not sharing the file
+			ConnectedClient client = fileClients.next();
+			if (client.getFileAccessMode() == ServerFileState.NOT_SHARED) fileClients.remove();
+			
+		}
+		
 	}
 	
 }

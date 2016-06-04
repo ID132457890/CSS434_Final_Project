@@ -29,6 +29,11 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 	@Override
 	public FileContents download(String clientIPName, String filename, String mode) {
 
+		// make sure the client is no longer associated with any files - it's requesting a new one
+		for (HostedFile file : hostedFiles.values()) {
+			file.deRegisterClient(clientIPName);
+		}
+		
 		// get the referenced file
 		HostedFile file = getFile(filename);
 	
@@ -63,8 +68,25 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 
 	@Override
 	public boolean upload(String clientIPName, String filename, FileContents contents) {
-		// TODO Auto-generated method stub
-		return false;
+
+		// get the referenced file
+		HostedFile file = getFile(filename);
+	
+		// valid filename?
+		if (file == null) return false;
+		
+		// is this file in the correct mode for updates? (must have an owner)
+		ConnectedClient owningClient = file.getOwner();
+		if (owningClient == null) return false; 	// nobody owns this file yet - uploading is not valid
+
+		// is the client attempting to perform the upload the real owner of the file?
+		if (!clientIPName.equalsIgnoreCase(owningClient.getClientIPName())) return false;
+		
+		// set new file contents
+		file.setFileContents(contents);
+		
+		return true;
+		
 	}
 
 	public static void main(String[] args) {
