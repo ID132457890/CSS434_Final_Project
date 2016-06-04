@@ -7,6 +7,7 @@ public class ServerImplTest {
 	private static final String VALID_FILENAME = "C:/temp/industrial_fpy_04_05_2016.pdf";
 	private static final String INVALID_FILENAME = "foo";
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
 
 		FileServer server = new FileServer();
