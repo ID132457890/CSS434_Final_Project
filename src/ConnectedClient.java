@@ -27,8 +27,14 @@ public class ConnectedClient {
 		// connect to the remote client
 		try {
 			
-			client = (ClientInterface) Naming.lookup(RMI_URL_PREFIX + clientIPName + ":" + port + FileServer.CLIENT_RMI_SERVICE_NAME);
-		
+			String RMIUrl = RMI_URL_PREFIX + clientIPName + ":" + port + FileServer.CLIENT_RMI_SERVICE_NAME;
+			
+			if (FileServer.DEBUG_MODE) System.out.println("Attempting to connect to client at: " + RMIUrl);
+
+			client = (ClientInterface) Naming.lookup(RMIUrl);
+
+			if (FileServer.DEBUG_MODE) System.out.println("Client connection made!");
+			
 		} catch (Exception e) {
 
 			System.err.println("Exception connecting to client (" + clientIPName + "," + port + "): " + e.getMessage());
@@ -61,11 +67,22 @@ public class ConnectedClient {
 	 * @return Operation success (TRUE) or failure (FALSE)
 	 */
 	public boolean invalidate() {
-		
+
+		if (FileServer.DEBUG_MODE) System.out.println("Attempting to invalidate cache on client: " + clientIPName);
+
 		try {
-			return client.invalidate();
+			
+			boolean success = client.invalidate();
+			
+			if (FileServer.DEBUG_MODE) System.out.println("Client cache invalidation attempt returned " + success);
+
+			return success;
+			
 		} catch (RemoteException e) {
+
+			if (FileServer.DEBUG_MODE) System.out.println("Exception caught trying to invalidate client cache:" + e.getMessage());
 			return false;
+			
 		}
 
 	}
@@ -84,10 +101,21 @@ public class ConnectedClient {
 	 */
 	public boolean writeback( ) {
 
+		if (FileServer.DEBUG_MODE) System.out.println("Sending writeback request to client: " + clientIPName);
+
 		try {
-			return client.writeback();
+			
+			boolean success = client.writeback();
+			
+			if (FileServer.DEBUG_MODE) System.out.println("Writeback request returned " + success);
+
+			return success;
+			
 		} catch (RemoteException e) {
+
+			if (FileServer.DEBUG_MODE) System.out.println("Exception caught trying to request client writeback:" + e.getMessage());
 			return false;
+		
 		}
 		
 	}
