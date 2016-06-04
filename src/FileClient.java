@@ -139,15 +139,15 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 
     public static void main(String[] args)
     {
-        try {
-            FileOutputStream stream = new FileOutputStream("/tmp/useraccount.txt");
+        /*try {
+            FileOutputStream stream = new FileOutputStream("tmp/useraccount.txt");
             stream.write(new byte[]{0, 100, 56});
             //stream.flush();
             stream.close();
         } catch (Exception e)
         {
 
-        }
+        }*/
 
         if (args.length != 2)
         {
@@ -334,12 +334,12 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     public boolean showInEmacs(String readWrite)
     {
         //Change permission to read/write
-        if (this.executeUnix("chmod", "600", "/tmp/useraccount.txt"))
+        if (this.executeUnix("chmod", "600", "tmp/useraccount.txt"))
         {
             try
             {
                 //Write the data to the file
-                FileOutputStream stream = new FileOutputStream("/tmp/useraccount.txt");
+                FileOutputStream stream = new FileOutputStream("tmp/useraccount.txt");
                 stream.write(fileContents.get());
                 stream.flush();
                 stream.close();
@@ -362,10 +362,10 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             }
 
             //Check if now the unix call was successful
-            if (this.executeUnix("chmod", rwParam, "/tmp/useraccount.txt"))
+            if (this.executeUnix("chmod", rwParam, "tmp/useraccount.txt"))
             {
                 //Check if using emac was successful
-                boolean success = this.executeUnix("emacs", "/tmp/useraccount.txt", null);
+                boolean success = this.executeUnix("emacs", "tmp/useraccount.txt", null);
 
                 //Check if has write permissions
                 if (success && readWrite.equals("w"))
@@ -373,7 +373,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                     try
                     {
                         //Read from the file when changes in emac have been completed
-                        FileInputStream stream = new FileInputStream("/tmp/useraccount.txt");
+                        FileInputStream stream = new FileInputStream("tmp/useraccount.txt");
                         fileContents = new FileContents(new byte[stream.available()]);
                         stream.read(fileContents.get());
                         stream.close();
