@@ -3,7 +3,8 @@ import java.io.Serializable;
 
 /**
  * FileContents contains the actual contents of a file shared
- * between the server and client
+ * between the server and client. It is intended to be passed
+ * via RMI calls, therefore must be serializable.
  *
  */
 @SuppressWarnings("serial")
