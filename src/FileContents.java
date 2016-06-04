@@ -22,19 +22,19 @@ public class FileContents implements Serializable {
 	}
 	
 	/**
-	 * Send file contents to the console.
-	 * @throws IOException 
-	 */
-	public void print() throws IOException {
-		System.out.println( "File Contents = " + contents );
-	}
-	
-	/**
 	 * Get the contents of the file
 	 * @return File contents
 	 */
 	public byte[] get() {
 		return contents;
+	}
+	
+	/**
+	 * Send file contents to the console.
+	 * @throws IOException 
+	 */
+	public void print() throws IOException {
+		System.out.println( "File Contents = " + contents );
 	}
 	
 }
