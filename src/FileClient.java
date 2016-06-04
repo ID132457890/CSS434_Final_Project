@@ -139,16 +139,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 
     public static void main(String[] args)
     {
-        /*try {
-            FileOutputStream stream = new FileOutputStream("tmp/useraccount.txt");
-            stream.write(new byte[]{0, 100, 56});
-            //stream.flush();
-            stream.close();
-        } catch (Exception e)
-        {
-
-        }*/
-
         if (args.length != 2)
         {
             System.out.println("usage: java FileClient serverIP port");
@@ -305,10 +295,21 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         try
         {
             Runtime runtime = Runtime.getRuntime();
-            Process process = runtime.exec(params);
+            Process process = null;
 
             if (firstParamater.equals("emacs"))
             {
+                ProcessBuilder   ps=new ProcessBuilder("emacs", secondParameter);
+
+                ps.redirectErrorStream(true);
+                ps.inheritIO();
+                ps.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+
+                process = ps.start();
+            }
+            else
+            {
+                process = runtime.exec(params);
             }
 
             process.waitFor();
