@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.*;
+import java.net.*;
 import java.rmi.*;
 import java.rmi.server.*;
 
@@ -6,7 +8,13 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 {
     private ServerInterface server = null;
     private BufferedReader input = null;
-    private FileManager fileManager = null;
+
+    //File stuff
+    public String clientIP = "";
+    public FileState currentFileState = FileState.Invalid;
+
+    private String currentFileName = "";
+    private FileContents fileContents = null;
 
     /*
     Initializes the file client with a server ip and port
@@ -24,7 +32,16 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             e.printStackTrace();
         }
 
-        fileManager = new FileManager();
+        try
+        {
+            InetAddress addr = InetAddress.getLocalHost();
+            clientIP = addr.getHostName();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
         input = new BufferedReader(new InputStreamReader(System.in));
     }
 
@@ -51,18 +68,19 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 fileName = input.readLine();
 
                 //Validate the name
-                if (fileName == "")
+                if (fileName.equals(""))
                 {
                     thread.kill();
                     continue;
                 }
 
                 //Get the read/write option
-                System.out.println("\nHow(r/w): ");
+                System.out.println("How(r/w): ");
                 readWriteString = input.readLine();
 
                 //Validate the read write string
-                if (!readWriteString.equals("r") && !readWriteString.equals("w")) {
+                if (!readWriteString.equals("r") && !readWriteString.equals("w"))
+                {
                     thread.kill();
                     continue;
                 }
@@ -76,29 +94,29 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             thread.kill();
 
             //Check if the file exists
-            if (!fileManager.checkIfExists(fileName, readWriteString))
+            if (!this.checkIfExists(fileName, readWriteString))
             {
                 //If it's owned as writing, then upload to server
-                if (fileManager.currentFileState == FileState.WriteOwned)
+                if (currentFileState == FileState.WriteOwned)
                 {
-                    fileManager.upload();
+                    this.upload();
                 }
 
                 //Otherwise not available, so download
-                fileManager.download(fileName, readWriteString);
+                this.download(fileName, readWriteString);
             }
 
             //Finally, show the file in emacs
-            fileManager.showInEmacs(readWriteString);
+            this.showInEmacs(readWriteString);
         }
     }
 
     //Client interface implementation
     public boolean invalidate() throws RemoteException
     {
-        if (fileManager.currentFileState == FileState.ReadShared)
+        if (currentFileState == FileState.ReadShared)
         {
-            fileManager.currentFileState = FileState.Invalid;
+            currentFileState = FileState.Invalid;
 
             return true;
         }
@@ -109,9 +127,9 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     //Client interface implementation
     public boolean writeback() throws RemoteException
     {
-        if (fileManager.currentFileState == FileState.WriteOwned)
+        if (currentFileState == FileState.WriteOwned)
         {
-            fileManager.currentFileState = FileState.ReleaseOwnership;
+            currentFileState = FileState.ReleaseOwnership;
 
             return true;
         }
@@ -141,229 +159,213 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         }
     }
 
+    public synchronized boolean checkIfExists(String fileName, String readWrite)
+    {
+        if (!currentFileName.equals(fileName))
+        {
+            //False if the name of the current file doesn't match
+            return false;
+        }
+        else if (currentFileState == FileState.ReleaseOwnership)
+        {
+            //False if the file is about to not be owned anymore
+            return false;
+        }
+        else if (readWrite.equals("r") && currentFileState != FileState.Invalid)
+        {
+            //True if user wants to read and the file isn't invalid
+            return true;
+        }
+        else if (readWrite.equals("w") && currentFileState == FileState.WriteOwned)
+        {
+            //True if user wants to write and the file is in the write ownership
+            return true;
+        }
+
+        return false;
+    }
+
+    /*
+        Downloads the file from the server.
+    */
+    public boolean download(String fileName, String readWrite)
+    {
+        //Set the file to the new permission types
+        if (currentFileState == FileState.Invalid)
+        {
+            if (readWrite.equals("r"))
+            {
+                currentFileState = FileState.ReadShared;
+            }
+            else if (readWrite.equals("w"))
+            {
+                currentFileState = FileState.WriteOwned;
+            }
+        }
+        else if (currentFileState == FileState.ReadShared)
+        {
+            if (readWrite.equals("w"))
+            {
+                currentFileState = FileState.WriteOwned;
+            }
+        }
+
+        //Get the file name
+        currentFileName = fileName;
+
+        try
+        {
+            //Download the file with rmi interface
+            fileContents = server.download(clientIP, fileName, readWrite);
+
+            return true;
+        }
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    /*
+        Uploads the file to the server.
+    */
+    public boolean upload()
+    {
+        //Set the new permissions
+        if (currentFileState == FileState.WriteOwned)
+        {
+            currentFileState = FileState.Invalid;
+        }
+        else if (currentFileState == FileState.ReleaseOwnership)
+        {
+            currentFileState = FileState.ReadShared;
+        }
+
+        try
+        {
+            //Upload through rmi
+            server.upload(clientIP, currentFileName, fileContents);
+        }
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+        Helper for executing a unix call
+         */
+    public boolean executeUnix(String firstParamater, String secondParameter, String thirdParameter)
+    {
+        String[] params = null;
+
+        if (thirdParameter == null)
+        {
+            params = new String[2];
+        }
+        else
+        {
+            params = new String[3];
+            params[2] = thirdParameter;
+        }
+
+        params[0] = firstParamater;
+        params[1] = secondParameter;
+
+        try
+        {
+            Runtime runtime = Runtime.getRuntime();
+            Process process = runtime.exec(params);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /*
+        Shows the file in emacs with permission parameter
+         */
+    public boolean showInEmacs(String readWrite)
+    {
+        //Check if didn't execute correctly
+        if (!this.executeUnix("chmod", "600", "/tmp/useraccount.txt"))
+        {
+            return false;
+        }
+        else
+        {
+            try
+            {
+                //Write the data to the file
+                FileOutputStream stream = new FileOutputStream("/tmp/useraccount.txt");
+                stream.write(fileContents.get());
+                stream.flush();
+                stream.close();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return false;
+            }
+
+            //Set the appropriate permissions
+            String rwParam = "";
+            if (readWrite.equals("r"))
+            {
+                rwParam = "400";
+            }
+            else
+            {
+                rwParam = "600";
+            }
+
+            //Check if now the unix call was successful
+            if (this.executeUnix("chmod", rwParam, "/tmp/useraccount.txt"))
+            {
+                //Check if using emac was successful
+                boolean success = this.executeUnix("emacs", "/tmp/useraccount.txt", null);
+
+                //Check if has write permissions
+                if (success && readWrite.equals("w"))
+                {
+                    try
+                    {
+                        //Read from the file when changes in emac have been completed
+                        FileInputStream stream = new FileInputStream("/tmp/useraccount.txt");
+                        fileContents = new FileContents(new byte[stream.available()]);
+                        stream.read(fileContents.get());
+                        stream.close();
+
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
 
     //Enumeration to hold the file state
     public enum FileState
     {
         Invalid, ReadShared, WriteOwned, ReleaseOwnership;
     }
-
-
-    /*
-    Class that manages the file in the temporary folder.
-     */
-    private class FileManager
-    {
-        public String clientIP = "";
-        public FileState currentFileState = FileState.Invalid;
-
-        private String currentFileName = "";
-        private FileContents fileContents = null;
-
-        public synchronized boolean checkIfExists(String fileName, String readWrite)
-        {
-            if (!currentFileName.equals(fileName))
-            {
-                //False if the name of the current file doesn't match
-                return false;
-            }
-            else if (currentFileState == FileState.ReleaseOwnership)
-            {
-                //False if the file is about to not be owned anymore
-                return false;
-            }
-            else if (readWrite.equals("r") && currentFileState != FileState.Invalid)
-            {
-                //True if user wants to read and the file isn't invalid
-                return true;
-            }
-            else if (readWrite.equals("w") && currentFileState == FileState.WriteOwned)
-            {
-                //True if user wants to write and the file is in the write ownership
-                return true;
-            }
-
-            return false;
-        }
-
-        /*
-        Downloads the file from the server.
-         */
-        public boolean download(String fileName, String readWrite)
-        {
-            //Set the file to the new permission types
-            if (currentFileState == FileState.Invalid)
-            {
-                if (readWrite.equals("r"))
-                {
-                    currentFileState = FileState.ReadShared;
-                }
-                else if (readWrite.equals("w"))
-                {
-                    currentFileState = FileState.WriteOwned;
-                }
-            }
-            else if (currentFileState == FileState.ReadShared)
-            {
-                if (readWrite.equals("w"))
-                {
-                    currentFileState = FileState.WriteOwned;
-                }
-            }
-
-            //Get the file name
-            currentFileName = fileName;
-
-            try
-            {
-                //Download the file with rmi interface
-                fileContents = server.download(clientIP, fileName, readWrite);
-
-                return true;
-            }
-            catch (RemoteException e)
-            {
-                e.printStackTrace();
-
-                return false;
-            }
-        }
-
-        /*
-        Uploads the file to the server.
-         */
-        public boolean upload()
-        {
-            //Set the new permissions
-            if (currentFileState == FileState.WriteOwned)
-            {
-                currentFileState = FileState.Invalid;
-            }
-            else if (currentFileState == FileState.ReleaseOwnership)
-            {
-                currentFileState = FileState.ReadShared;
-            }
-
-            try
-            {
-                //Upload through rmi
-                server.upload(clientIP, currentFileName, fileContents);
-            }
-            catch (RemoteException e)
-            {
-                e.printStackTrace();
-
-                return false;
-            }
-
-            return true;
-        }
-
-        /*
-        Helper for executing a unix call
-         */
-        public boolean executeUnix(String firstParamater, String secondParameter, String thirdParameter)
-        {
-            String[] params = null;
-
-            if (thirdParameter == null)
-            {
-                params = new String[2];
-            }
-            else
-            {
-                params = new String[3];
-                params[2] = thirdParameter;
-            }
-
-            params[0] = firstParamater;
-            params[1] = secondParameter;
-
-            try
-            {
-                Runtime runtime = Runtime.getRuntime();
-
-                Process process = runtime.exec(params);
-                process.waitFor();
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-
-        /*
-        Shows the file in emacs with permission parameter
-         */
-        public boolean showInEmacs(String readWrite)
-        {
-            //Check if didn't execute correctly
-            if (!this.executeUnix("chmod", "600", "/tmp/useraccount.txt"))
-            {
-                return false;
-            }
-            else
-            {
-                try
-                {
-                    //Write the data to the file
-                    FileOutputStream stream = new FileOutputStream("/tmp/useraccount.txt");
-                    stream.write(fileContents.get());
-                    stream.flush();
-                    stream.close();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-                //Set the appropriate permissions
-                String rwParam = "";
-                if (readWrite.equals("r"))
-                {
-                    rwParam = "400";
-                }
-                else
-                {
-                    rwParam = "600";
-                }
-
-                //Check if now the unix call was successful
-                if (this.executeUnix("chmod", rwParam, "/tmp/useraccount.txt"))
-                {
-                    //Check if using emac was successful
-                    boolean success = this.executeUnix("emacs", "/tmp/useraccount.txt", null);
-
-                    //Check if has write permissions
-                    if (success && readWrite.equals("w"))
-                    {
-                        try
-                        {
-                            //Read from the file when changes in emac have been completed
-                            FileInputStream stream = new FileInputStream("/tmp/useraccount.txt");
-                            fileContents = new FileContents(new byte[stream.available()]);
-                            stream.read(fileContents.get());
-                            stream.close();
-
-                            return true;
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                            return false;
-                        }
-                    }
-                }
-
-                return false;
-            }
-        }
-    }
-
 
 
 
