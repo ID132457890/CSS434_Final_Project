@@ -176,12 +176,12 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         }
         else if (readWrite.equals("r") && currentFileState != FileState.Invalid)
         {
-            //True if user wants to read and the file isn't invalid
+            //True since client has most up to date version
             return true;
         }
         else if (readWrite.equals("w") && currentFileState == FileState.WriteOwned)
         {
-            //True if user wants to write and the file is in the write ownership
+            //True since no writeback method has been called
             return true;
         }
 
@@ -193,6 +193,28 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     */
     public boolean download(String fileName, String readWrite)
     {
+        try
+        {
+            //Download the file with rmi interface
+
+            FileContents fileC = server.download(clientIP, fileName, readWrite);
+
+            if (fileC != null)
+            {
+                fileContents = new FileContents(fileC.get());
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+
+            return false;
+        }
+
         //Set the file to the new permission types
         if (currentFileState == FileState.Invalid)
         {
@@ -216,27 +238,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         //Get the file name
         currentFileName = fileName;
 
-        try
-        {
-            //Download the file with rmi interface
-
-            FileContents fileC = server.download(clientIP, fileName, readWrite);
-
-            if (fileC != null)
-            {
-                fileContents = new FileContents(fileC.get());
-
-                return  true;
-            }
-
-            return false;
-        }
-        catch (RemoteException e)
-        {
-            e.printStackTrace();
-
-            return false;
-        }
+        return true;
     }
 
     /*
@@ -244,16 +246,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     */
     public boolean upload()
     {
-        //Set the new permissions
-        if (currentFileState == FileState.WriteOwned)
-        {
-            currentFileState = FileState.Invalid;
-        }
-        else if (currentFileState == FileState.ReleaseOwnership)
-        {
-            currentFileState = FileState.ReadShared;
-        }
-
         try
         {
             //Upload through rmi
@@ -267,6 +259,16 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             e.printStackTrace();
 
             return false;
+        }
+
+        //Set the new permissions
+        if (currentFileState == FileState.WriteOwned)
+        {
+            currentFileState = FileState.Invalid;
+        }
+        else if (currentFileState == FileState.ReleaseOwnership)
+        {
+            currentFileState = FileState.ReadShared;
         }
 
         return true;
@@ -297,15 +299,16 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             Runtime runtime = Runtime.getRuntime();
             Process process = null;
 
+            //Special case for emacs since it requires TTY
             if (firstParamater.equals("emacs"))
             {
-                ProcessBuilder   ps=new ProcessBuilder("emacs", secondParameter);
+                ProcessBuilder pb = new ProcessBuilder("emacs", secondParameter);
 
-                ps.redirectErrorStream(true);
-                ps.inheritIO();
-                ps.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                pb.redirectErrorStream(true);
+                pb.inheritIO();
+                pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 
-                process = ps.start();
+                process = pb.start();
             }
             else
             {
@@ -378,6 +381,11 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                         fileContents = new FileContents(new byte[stream.available()]);
                         stream.read(fileContents.get());
                         stream.close();
+
+                        if (currentFileState == FileState.ReleaseOwnership)
+                        {
+                            this.upload();
+                        }
 
                         return true;
                     }
