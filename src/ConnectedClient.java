@@ -3,7 +3,8 @@ import java.rmi.RemoteException;
 
 /**
  * Connected Client is a container for information related to a client that
- * is being tracked by the Server
+ * is being tracked by the Server, and also serves as an RMI proxy to the
+ * client.
  *
  */
 public class ConnectedClient {
@@ -14,6 +15,11 @@ public class ConnectedClient {
 	private ServerFileState fileAccessMode;
 	private ClientInterface client;
 	
+	/**
+	 * Constructor for ConnectedClient, used to instantiate and init the client RMI proxy
+	 * @param clientIPName The hostname/IP address of the client
+	 * @param port The port number the client is receiving RMI requests on
+	 */
 	public ConnectedClient(String clientIPName, int port) {
 		
 		this.clientIPName = clientIPName;
@@ -28,7 +34,9 @@ public class ConnectedClient {
 			System.err.println("Exception connecting to client (" + clientIPName + "," + port + "): " + e.getMessage());
 			
 			// negative return code is an error in execution
-			System.exit(-1);		}
+			System.exit(-1);		
+			
+		}
 		
 	}
 
@@ -49,14 +57,6 @@ public class ConnectedClient {
 	}
 
 	/**
-	 * Set the access mode for the file the client is using
-	 * @param fileAccessMode The current access mode
-	 */
-	public void setFileAccessMode(ServerFileState fileAccessMode) {
-		this.fileAccessMode = fileAccessMode;
-	}
-	
-	/**
 	 * Instruct the client to mark it's copy of the file as invalid
 	 * @return Operation success (TRUE) or failure (FALSE)
 	 */
@@ -68,6 +68,14 @@ public class ConnectedClient {
 			return false;
 		}
 
+	}
+	
+	/**
+	 * Set the access mode for the file the client is using
+	 * @param fileAccessMode The current access mode
+	 */
+	public void setFileAccessMode(ServerFileState fileAccessMode) {
+		this.fileAccessMode = fileAccessMode;
 	}
 
 	/**
