@@ -6,6 +6,15 @@ import java.util.Map;
 
 /**
  * Implementation of Distributed File System Server
+ * 
+ * This class contains a "main()", so it is intended to be launched from
+ * a console session. The only argument necessary is the port that will
+ * be used for receiving RMI requests from FileClients.
+ * 
+ * With the exception of reading bytes from the filesystem to instantiate
+ * HostedFiles, the server class delegates all file operations to the
+ * appropriate instance of HostedFile. By maintaining a collection of
+ * "active" HostedFiles, the server is effectively caching requests.
  *
  */
 @SuppressWarnings("serial")
@@ -17,11 +26,17 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 	// the files/clients being hosted by this server
 	private Map<String, HostedFile> hostedFiles = new HashMap<String, HostedFile>();
 	
+	// the port number for incoming RMI requests
 	private int port;
 	
 	// required no-args constructor
 	public FileServer() throws RemoteException {}
 	
+	/**
+	 * Instantiate a FileServer, listening on a specified port
+	 * @param port The port on which to receive RMI requests
+	 * @throws RemoteException
+	 */
 	public FileServer(int port) throws RemoteException {
 		this.port = port;
 	}

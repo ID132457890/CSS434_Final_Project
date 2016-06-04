@@ -9,6 +9,7 @@ public interface ServerInterface extends Remote {
 
 	public static final String RMI_SERVICE_NAME = "fileserver";
 
+	// file access modes specified by FileClients
 	public static final String READ_MODE = "r";
 	public static final String WRITE_MODE = "w";
 
