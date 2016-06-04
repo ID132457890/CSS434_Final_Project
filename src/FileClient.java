@@ -139,12 +139,15 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 
     public static void main(String[] args)
     {
-        /*try {
+        try {
             FileOutputStream stream = new FileOutputStream("/tmp/useraccount.txt");
             stream.write(new byte[]{0, 100, 56});
             //stream.flush();
             stream.close();
-        } catch (Exception e)*/
+        } catch (Exception e)
+        {
+
+        }
 
         if (args.length != 2)
         {
@@ -264,12 +267,10 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         try
         {
             //Upload through rmi
-            if (server.upload(clientIP, currentFileName, fileContents))
+            if (!server.upload(clientIP, currentFileName, fileContents))
             {
-                return true;
+                return false;
             }
-
-            return false;
         }
         catch (RemoteException e)
         {
