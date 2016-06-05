@@ -1,10 +1,14 @@
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import java.rmi.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.*;
+import java.rmi.server.UnicastRemoteObject;
 
 public class FileClient extends UnicastRemoteObject implements  ClientInterface
 {
