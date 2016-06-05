@@ -225,7 +225,7 @@ public class HostedFile {
 			registerClient(clientIPName, port, ServerFileState.WRITE_SHARED);
 			
 			// success!
-			if (FileServer.DEBUG_MODE) System.out.println("Client is registered as owner");
+			if (FileServer.DEBUG_MODE) System.out.println(clientIPName + " is registered as owner of " + filename);
 			return true;
 			
 		}
