@@ -35,7 +35,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         try
         {
             InetAddress addr = InetAddress.getLocalHost();
-            clientIP = addr.getHostName();
+            clientIP = addr.getHostAddress();
         }
         catch (Exception e)
         {
