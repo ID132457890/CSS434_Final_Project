@@ -1,19 +1,15 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.rmi.Naming;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+import java.io.*;
+import java.util.*;
+import java.net.*;
+import java.rmi.*;
+import java.rmi.server.*;
+import java.rmi.registry.*;
 
 public class FileClient extends UnicastRemoteObject implements  ClientInterface
 {
     private ServerInterface server = null;
     private BufferedReader input = null;
+    private boolean inEmacs = false;
 
     //File stuff
     public String clientIP = "";
@@ -51,6 +47,8 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         input = new BufferedReader(new InputStreamReader(System.in));
     }
 
+
+
     /*
     Main client loop, where the typing happens
      */
@@ -59,8 +57,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         while (true)
         {
             //Create a new thread for upload
-            //WriteThread thread = new WriteThread(this);
-            //thread.start();
 
             String fileName = "";
             String readWriteString = "";
@@ -76,7 +72,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 //Validate the name
                 if (fileName.equals(""))
                 {
-                    //thread.kill();
                     continue;
                 }
 
@@ -87,7 +82,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 //Validate the read write string
                 if (!readWriteString.equals("r") && !readWriteString.equals("w"))
                 {
-                    //thread.kill();
                     continue;
                 }
             }
@@ -95,9 +89,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             {
                 e.printStackTrace();
             }
-
-            //The user made a read/write, so thread not needed
-            //thread.kill();
 
             //Check if the file exists
             if (!this.checkIfExists(fileName, readWriteString))
@@ -153,16 +144,13 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 
         try
         {
-
             // start local RMI registry
             startRegistry(Integer.parseInt(args[1]));
 
-        	//Creates the file client
+            //Creates the file client
             FileClient client = new FileClient(args[0], args[1]);
             Naming.rebind("rmi://localhost:" + args[1] + "/fileclient", client);
-            
             client.startClient();
-        
         }
         catch (Exception e)
         {
@@ -171,10 +159,33 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         }
     }
 
+    /**
+     * Start RMI registry on this machine. From Lab 3A example, CSS 434A.
+     * @param port The port number the server will be listening on
+     * @throws RemoteException
+     */
+    @SuppressWarnings("unused")
+    private static void startRegistry(int port) throws RemoteException
+    {
+
+        try {
+
+            Registry registry = LocateRegistry.getRegistry( port );
+            registry.list( );
+
+        }
+        catch ( RemoteException e ) {
+
+            Registry registry = LocateRegistry.createRegistry( port );
+
+        }
+
+    }
+
     /*
         Check if the file needs to be downloaded again or not
      */
-    public synchronized boolean checkIfExists(String fileName, String readWrite)
+    public boolean checkIfExists(String fileName, String readWrite)
     {
         if (!currentFileName.equals(fileName))
         {
@@ -417,75 +428,4 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     {
         Invalid, ReadShared, WriteOwned, ReleaseOwnership;
     }
-
-
-
-
-
-
-
-    /*
-    Custom thread for uploading a file that is needed to be uploaded to the server.
-     */
-    private class WriteThread extends Thread
-    {
-        private boolean running = false;
-        private FileClient attachedClient = null;
-
-        public WriteThread(FileClient client)
-        {
-            running = true;
-
-            attachedClient = client;
-        }
-
-        public void run()
-        {
-            while (running)
-            {
-                //Keep checking if the file needs to be uploaded
-                if (attachedClient.currentFileState == FileState.ReleaseOwnership)
-                {
-                    attachedClient.upload();
-                }
-            }
-        }
-
-        synchronized void kill()
-        {
-            running = false;
-
-            try
-            {
-                this.join();
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-    
-	/**
-	 * Start RMI registry on this machine. From Lab 3A example, CSS 434A.
-	 * @param port The port number the server will be listening on
-	 * @throws RemoteException
-	 */
-    @SuppressWarnings("unused")
-	private static void startRegistry( int port ) throws RemoteException {
-
-    	try {
-		
-    		Registry registry = LocateRegistry.getRegistry( port );
-		    registry.list( );  
-		
-    	}
-		catch ( RemoteException e ) { 
-		
-			Registry registry = LocateRegistry.createRegistry( port );
-		
-		}
-    
-    }
-
 }
