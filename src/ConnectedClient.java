@@ -27,7 +27,7 @@ public class ConnectedClient {
 		// connect to the remote client
 		try {
 			
-			String RMIUrl = RMI_URL_PREFIX + clientIPName + ":" + port + FileServer.CLIENT_RMI_SERVICE_NAME;
+			String RMIUrl = RMI_URL_PREFIX + clientIPName + ":" + port + "/" + FileServer.CLIENT_RMI_SERVICE_NAME;
 			
 			if (FileServer.DEBUG_MODE) System.out.println("Attempting to connect to client at: " + RMIUrl);
 
