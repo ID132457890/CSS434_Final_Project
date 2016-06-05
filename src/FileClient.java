@@ -154,11 +154,11 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         try
         {
             // start local RMI registry
-            //startRegistry(Integer.parseInt(args[1]));
+            startRegistry(Integer.parseInt(args[1]));
 
             //Creates the file client
             FileClient client = new FileClient(args[0], args[1]);
-            //Naming.rebind("rmi://localhost:" + args[1] + "/fileclient", client);
+            Naming.rebind("rmi://localhost:" + args[1] + "/fileclient", client);
             client.startClient();
         }
         catch (Exception e)
