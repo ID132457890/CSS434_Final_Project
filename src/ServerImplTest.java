@@ -6,12 +6,21 @@ public class ServerImplTest {
 
 	private static final String VALID_FILENAME = "C:/temp/industrial_fpy_04_05_2016.pdf";
 	private static final String INVALID_FILENAME = "foo";
+
+	private static FileServer server;
 	
-	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
 
-		FileServer server = new FileServer();
+		server = new FileServer();
 
+		doHostedFileTests();
+		doFileContentsTests();
+		
+	}
+	
+	@SuppressWarnings("unused")
+	public static void doHostedFileTests() throws Exception {
+		
 		// first call retrieves from filesystem
 		HostedFile a = server.getFile(VALID_FILENAME);
 		
@@ -20,7 +29,13 @@ public class ServerImplTest {
 		
 		// request bad file
 		HostedFile c = server.getFile(INVALID_FILENAME);
-
+		
+		
+	}
+	
+	@SuppressWarnings("unused")
+	public static void doFileContentsTests() throws Exception {
+		
 		// request a file for download, read-only
 		FileContents d = server.download("localhost", VALID_FILENAME, ServerInterface.READ_MODE);
 		
@@ -28,5 +43,5 @@ public class ServerImplTest {
 		FileContents e = server.download("localhost", VALID_FILENAME, ServerInterface.WRITE_MODE);
 		
 	}
-		
+	
 }
