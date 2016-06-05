@@ -9,7 +9,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 {
     private ServerInterface server = null;
     private BufferedReader input = null;
-    private boolean inEmacs = false;
 
     //File stuff
     public String clientIP = "";
@@ -32,6 +31,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         catch (Exception e)
         {
             e.printStackTrace();
+            System.exit(-1);
         }
 
         try
@@ -42,6 +42,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         catch (Exception e)
         {
             e.printStackTrace();
+            System.exit(-1);
         }
 
         input = new BufferedReader(new InputStreamReader(System.in));
@@ -90,6 +91,8 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 e.printStackTrace();
             }
 
+            boolean openEmacs = true;
+
             //Check if the file exists
             if (!this.checkIfExists(fileName, readWriteString))
             {
@@ -100,11 +103,17 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 }
 
                 //Otherwise not available, so download
-                this.download(fileName, readWriteString);
+                if (!this.download(fileName, readWriteString))
+                {
+                    openEmacs = false;
+                }
             }
 
-            //Finally, show the file in emacs
-            this.showInEmacs(readWriteString);
+            if (openEmacs)
+            {
+                //Finally, show the file in emacs
+                this.showInEmacs(readWriteString);
+            }
         }
     }
 
