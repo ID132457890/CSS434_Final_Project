@@ -2,6 +2,8 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.*;
 
 public class FileClient extends UnicastRemoteObject implements  ClientInterface
@@ -147,10 +149,16 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 
         try
         {
-            //Creates the file client
+
+            // start local RMI registry
+            startRegistry(Integer.parseInt(args[1]));
+
+        	//Creates the file client
             FileClient client = new FileClient(args[0], args[1]);
             Naming.rebind("rmi://localhost:" + args[1] + "/fileclient", client);
+            
             client.startClient();
+        
         }
         catch (Exception e)
         {
@@ -453,4 +461,27 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             }
         }
     }
+    
+	/**
+	 * Start RMI registry on this machine. From Lab 3A example, CSS 434A.
+	 * @param port The port number the server will be listening on
+	 * @throws RemoteException
+	 */
+    @SuppressWarnings("unused")
+	private static void startRegistry( int port ) throws RemoteException {
+
+    	try {
+		
+    		Registry registry = LocateRegistry.getRegistry( port );
+		    registry.list( );  
+		
+    	}
+		catch ( RemoteException e ) { 
+		
+			Registry registry = LocateRegistry.createRegistry( port );
+		
+		}
+    
+    }
+
 }
