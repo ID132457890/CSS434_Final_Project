@@ -1,5 +1,7 @@
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +46,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 			// register server process with RMI service directory
 			String RMIUrl = RMI_URL_PREFIX + args[0] + "/" + RMI_SERVICE_NAME;
 			if (DEBUG_MODE) System.out.println("RMI: Binding FileServer at: " + RMIUrl);
+			startRegistry(Integer.parseInt(args[0]));
 			Naming.rebind(RMIUrl, server);
 			
 		}
@@ -219,5 +222,27 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 		return true;
 		
 	}
+	
+	/**
+	 * Start RMI registry on this machine. From Lab 3A example, CSS 434A.
+	 * @param port The port number the server will be listening on
+	 * @throws RemoteException
+	 */
+    @SuppressWarnings("unused")
+	private static void startRegistry( int port ) throws RemoteException {
+
+    	try {
+		
+    		Registry registry = LocateRegistry.getRegistry( port );
+		    registry.list( );  
+		
+    	}
+		catch ( RemoteException e ) { 
+		
+			Registry registry = LocateRegistry.createRegistry( port );
+		
+		}
+    
+    }
 	
 }
