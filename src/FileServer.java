@@ -48,6 +48,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 			if (DEBUG_MODE) System.out.println("RMI: Binding FileServer at: " + RMIUrl);
 			startRegistry(Integer.parseInt(args[0]));
 			Naming.rebind(RMIUrl, server);
+			if (DEBUG_MODE) System.out.println("Server started!");
 			
 		}
 		catch (Exception e) {
