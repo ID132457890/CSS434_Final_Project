@@ -75,7 +75,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 }
 
                 //Get the read/write option
-                System.out.println("How(r/w): ");
+                System.out.print("How(r/w): ");
                 readWriteString = input.readLine();
 
                 //Validate the read write string
