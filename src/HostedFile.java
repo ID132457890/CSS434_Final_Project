@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,6 +17,9 @@ import java.util.Map.Entry;
  */
 public class HostedFile {
 
+	// the maximum time that the server will wait for an upload after writeback (safety valve!)
+	private static final int MAX_UPLOAD_WAIT_MILLISECONDS = 500000;
+	
 	// the actual file as it exists in the local filesystem
 	private Path file = null;
 	
@@ -239,6 +243,23 @@ public class HostedFile {
 		boolean writebackSuccess = owner.writeback();
 		if (!writebackSuccess) return false;	// operation failed, file status indeterminate (retain)
 		
+		// wait for file state to switch back
+		Date startWait = new Date();
+		while (fileState != ServerFileState.NOT_SHARED) {
+			
+			// don't wait forever for a client to upload changes
+			Date now = new Date();
+			if ((now.getTime() - startWait.getTime()) > MAX_UPLOAD_WAIT_MILLISECONDS) break;
+			
+			// wait a little bit to prevent hogging CPU
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				break;
+			}
+			
+		}
+		
 		// take ownership now
 		if (FileServer.DEBUG_MODE) System.out.println("Setting file state to WRITE_SHARED");
 		fileState = ServerFileState.WRITE_SHARED;
@@ -291,8 +312,7 @@ public class HostedFile {
 			this.fileContents = fileContents;
 			
 			// all clients must invalidate their cached copies
-			boolean invalidationSuccess = invalidateClients();
-			if (!invalidationSuccess) return;
+			invalidateClients();
 			
 			// this file is not shared any more
 			if (FileServer.DEBUG_MODE) System.out.println("Setting file state to NOT_SHARED");
