@@ -57,8 +57,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     {
         while (true)
         {
-            //Create a new thread for upload
-
             String fileName = "";
             String readWriteString = "";
 
@@ -77,7 +75,7 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 }
 
                 //Get the read/write option
-                System.out.print("How(r/w): ");
+                System.out.println("How(r/w): ");
                 readWriteString = input.readLine();
 
                 //Validate the read write string
