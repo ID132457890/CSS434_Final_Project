@@ -17,6 +17,8 @@ HostedFileTest, ServerImplTest: Classes used for testing and debugging.
 
 
 
+-----FileServer-----
+
 FileServer basic description of operation:
 
 At startup (by calling "main", supplying port number as argument), this class is registered with the local RMI registry. The thread then waits for upload or download requests from clients.
@@ -47,7 +49,42 @@ Performance improvements for FileServer:
 
 
 
-
 Deviations from specification, FileServer:
 
 The only (intentional) deviation was to use HashMaps rather than Vectors. A HashMap provides quicker access than iterating through a Vector or implementing a Comparator for HostedFiles. In this implementation, a HashMap won't provide any real performance improvement or provide protection against concurrent access (Iterators), but it was an interesting exercise to try.
+
+
+
+-----FileClient-----
+
+Main flow:
+
+The main flow of the program is in the startClient() method, where a while loop keeps asking the user which file he wants to read/write, and further operations (like download or upload) are performed.
+
+In the loop, after the user picked a file, a check is going to be performed to see if the file has to be downloaded through the chekIfExists() method. Depending on the permissions the user wants and the ones that are currently in place, the method will return either true or false.
+
+When the file is in the tmp, then emacs is opened at the end of the loop. The loop doesn’t restart until emacs is closed.
+
+
+
+File state:
+
+The current state of the cache file is managed by an enumeration called FileState. The elements are named using the same convention as in the assignment description:
+Invalid: cache not valid for use
+ReadShared: client has read only permissions
+WriteOwned: client has write permissions as well
+ReleaseOwnership: client will lose the write permissions soon since another client wants the file
+
+
+
+Emacs/Permissions flow:
+
+When a file needs to be shown in emacs, the tmp cache file’s permission is changed into read/write to make sure that the content that has been downloaded is copied into the cache. Then, the permissions are set back to the ones the user picked (either read only or read/write). After the permissions have been set, the file is loaded into emacs.
+
+Since emacs is a command that requires tty, it uses a special ProcessBuilder to make sure that the current shell window is used as the basis for displaying the emacs interface. I/O is also inherited because typing is going to be involved. 
+
+
+
+Writeback check:
+
+When the server warns a client that it needs to write its data back to the server (switch to ReleaseOwnership state), the client uploads the file as soon as the emacs process ends. Initially, a thread that would constantly check the state of the file was considered, but it was a bit “overkill” and it created some performance issues.
