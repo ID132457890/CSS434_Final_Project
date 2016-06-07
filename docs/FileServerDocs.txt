@@ -57,6 +57,12 @@ The only (intentional) deviation was to use HashMaps rather than Vectors. A Hash
 
 -----FileClient-----
 
+Structure:
+
+The File Client only uses one class (FileClient) which handles both the connection with the server and the caching of the temporary file. The FileClient also implements the ClientInterface methods (invalidate() and writeback()).
+
+
+
 Main flow:
 
 The main flow of the program is in the startClient() method, where a while loop keeps asking the user which file he wants to read/write, and further operations (like download or upload) are performed.
