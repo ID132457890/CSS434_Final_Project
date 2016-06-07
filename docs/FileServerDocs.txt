@@ -1,0 +1,53 @@
+Description of classes:
+
+
+ConnectedClient: This class represents a client that has connected to the server. It is responsible for proxying communications between server and client.
+
+FileClient: This class interacts with a user to download a file from the server and launches "emacs" to either view or edit the file depending on user mode selection. 
+
+FileContents: A "wrapper" class that contains requested file contents, serializable for transmission between client and server. It contains a HashMap of files, representing server-side cache.
+
+FileServer: This is the main implementation of the file server, including the "main()" method used to start the server.
+
+HostedFile: This class is used to coordinte interactions between ConnectedClients and requested files. It also contains references to clients that are currently sharing the file as a HashMap.
+
+ServerFileState: A convenience enumeration to allow for easy state comparisons.
+
+HostedFileTest, ServerImplTest: Classes used for testing and debugging.
+
+
+
+FileServer basic description of operation:
+
+At startup (by calling "main", supplying port number as argument), this class is registered with the local RMI registry. The thread then waits for upload or download requests from clients.
+
+When a client attempts to download a file, the server first calls "getFile", which checks the local cache (a HashMap of HostedFile classes, with keys being filenames) to see if the file has already been loaded. If not, the file is read from the filesystem, wrapped in a FileContents class, and a HostedFile class is constructed and placed in the HashMap.
+
+Once the HostedFile is retrieved, the client is registered. If the client download mode is appropriate for the current file state the FileContents object is returned to the client. If the download request is for write, and the client is not the current owner, HostedFile iterates through all ConnectedClients and calls "writeback" for each.
+
+When a client attempts to upload new file contents, the matching HostedFile is obtained from the HashMap, file state is checked to see if client upload is permissible. If permitted, FileContents are set, and the HostedFile calls each ConnectedClient to invalidate their locally-cached copies.
+
+On upload, once all clients have either been requested to writeback or invalidate, and the new owner registered (for ownership change only), new file contents are written back to the filesystem and file state reset to "not shared".
+
+
+
+Funtional improvements for FileServer:
+
+1) Command-line parameter to enable/disable debugging messages
+2) Console commands for viewing server status, managing clients or cache entries
+
+
+
+Performance improvements for FileServer:
+
+1) Asynchronous callbacks to ConnectedClients, rather than sequential iteration
+2) Automatic expiration/eviction of files (HostedFile) from cache (the HashMap)
+3) Sending/receiving files using stream rather than serialized wrapper class
+4) Using "reactor" or "proactor" patterns (among others) for accepting and dispatching requests
+
+
+
+
+Deviations from specification, FileServer:
+
+The only (intentional) deviation was to use HashMaps rather than Vectors. A HashMap provides quicker access than iterating through a Vector or implementing a Comparator for HostedFiles. In this implementation, a HashMap won't provide any real performance improvement or provide protection against concurrent access (Iterators), but it was an interesting exercise to try.
