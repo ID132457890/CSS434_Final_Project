@@ -1,4 +1,4 @@
-Description of classes:
+﻿Description of classes:
 
 
 ConnectedClient: This class represents a client that has connected to the server. It is responsible for proxying communications between server and client.
@@ -29,7 +29,7 @@ Once the HostedFile is retrieved, the client is registered. If the client downlo
 
 When a client attempts to upload new file contents, the matching HostedFile is obtained from the HashMap, file state is checked to see if client upload is permissible. If permitted, FileContents are set, and the HostedFile calls each ConnectedClient to invalidate their locally-cached copies.
 
-On upload, once all clients have either been requested to writeback or invalidate, and the new owner registered (for ownership change only), new file contents are written back to the filesystem and file state reset to "not shared".
+On upload, once all clients have either been requested to writeback or invalidate, and the new owner registered (for ownership change only), new file contents are written back to the filesystem and file state reset to "not shared". By virtue of the mechanism for changing ownership, only two clients can be in the write state (one waiting for emacs to finish editing, the other waiting on a blocking "registerOwner" call). Other clients may still download the file for reading; those clients will receive an "invalidate" call once the first client completes the writeback, though.
 
 
 
