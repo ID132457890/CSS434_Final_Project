@@ -134,8 +134,15 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
 
             if (openEmacs)
             {
-                //Finally, show the file in emacs
-                this.showInEmacs(readWriteString);
+                if (createTempDir())
+                {
+                    //Finally, show the file in emacs
+                    this.showInEmacs(readWriteString);
+                }
+                else
+                {
+                    System.out.println("Failed to create tmp directory");
+                }
             }
         }
     }
@@ -379,6 +386,48 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
         }
 
         return false;
+    }
+    
+    /*
+     Creates teh temp folder with useraccount.txt if there is none.
+     */
+    public boolean createTempDir()
+    {
+        File dir = new File("tmp");
+        
+        if (!dir.exists())
+        {
+            //Create tmp folder
+            try
+            {
+                dir.mkdir();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                
+                return false;
+            }
+        }
+        
+        File usrAccount = new File("tmp/useraccount.txt");
+        
+        if (!usrAccount.exists())
+        {
+            //Create useraccount.txt file
+            try
+            {
+                usrAccount.createNewFile();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     /*
