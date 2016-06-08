@@ -13,6 +13,10 @@ public class HostedFileTest {
 		// test bad filename handling
 		HostedFile badFilenameFile = new HostedFile("blah");
 		
+		// test zero-length file reading
+		HostedFile zeroLengthFile = new HostedFile("C:/temp/zero_length.txt");
+		
+		
 	}
 	
 }

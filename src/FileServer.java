@@ -163,7 +163,7 @@ public class FileServer extends UnicastRemoteObject implements ServerInterface {
 			returnFile = new HostedFile(filename);
 			
 			// was there a file by the specified name?
-			if (returnFile.getFileContents() == null || returnFile.getFileContents().get().length == 0) {
+			if (returnFile.getFileContents() == null) {
 				
 				if (DEBUG_MODE) System.out.println("File not found in filesystem! Returning NULL");
 
