@@ -145,6 +145,15 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 }
             }
         }
+        
+        try
+        {
+            UnicastRemoteObject.unexportObject(this, true);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     //Client interface implementation
