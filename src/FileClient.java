@@ -71,7 +71,15 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 //Validate the name
                 if (fileName.equals(""))
                 {
+                    System.out.println("Please type a valid name.");
+
                     continue;
+                }
+                else if (fileName.equalsIgnoreCase("quit"))
+                {
+                    System.out.println("Thanks for using FileClient. Bye!!");
+
+                    break;
                 }
 
                 //Get the read/write option
@@ -81,6 +89,8 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 //Validate the read write string
                 if (!readWriteString.equals("r") && !readWriteString.equals("w"))
                 {
+                    System.out.println("Please type either r or w next time.");
+
                     continue;
                 }
             }
@@ -97,13 +107,28 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
                 //If it's owned as writing, then upload to server
                 if (currentFileState == FileState.WriteOwned)
                 {
-                    this.upload();
+                    if (!this.upload())
+                    {
+                        System.out.println("ERROR: Upload failed");
+
+                        continue;
+                    }
+                    else
+                    {
+                        System.out.println("File successfully uploaded");
+                    }
                 }
 
                 //Otherwise not available, so download
                 if (!this.download(fileName, readWriteString))
                 {
+                    System.out.println("ERROR: Download failed");
+
                     openEmacs = false;
+                }
+                else
+                {
+                    System.out.println("File successfully downloaded");
                 }
             }
 
@@ -174,19 +199,15 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
     @SuppressWarnings("unused")
     private static void startRegistry(int port) throws RemoteException
     {
-
-        try {
-
-            Registry registry = LocateRegistry.getRegistry( port );
-            registry.list( );
-
+        try
+        {
+            Registry registry = LocateRegistry.getRegistry(port);
+            registry.list();
         }
-        catch ( RemoteException e ) {
-
-            Registry registry = LocateRegistry.createRegistry( port );
-
+        catch (RemoteException e)
+        {
+            Registry registry = LocateRegistry.createRegistry(port);
         }
-
     }
 
     /*
@@ -346,8 +367,6 @@ public class FileClient extends UnicastRemoteObject implements  ClientInterface
             }
 
             process.waitFor();
-
-            System.out.println("Process exited with code = " + process.exitValue());
 
             if (process.exitValue() == 0)
             {
