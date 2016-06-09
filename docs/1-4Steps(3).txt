@@ -1,0 +1,124 @@
+Last login: Mon Jun  6 10:50:44 on ttys002
+Amritpals-MacBook-Pro:~ MacBookPro$ ssh amrits@uw1-320-23.uwb.edu
+ssh: Could not resolve hostname uw1-320-23.uwb.edu: nodename nor servname provided, or not known
+Amritpals-MacBook-Pro:~ MacBookPro$ Dev132456
+-bash: Dev132456: command not found
+Amritpals-MacBook-Pro:~ MacBookPro$ ssh amrits@uw1-320-23.uwb.edu
+ssh: Could not resolve hostname uw1-320-23.uwb.edu: nodename nor servname provided, or not known
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 6, 2016, 10:52:23 AM]
+Last login: Mon Jun  6 10:52:23 on ttys001
+Restored session: Mon Jun 6 10:52:21 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ clear
+
+
+
+
+
+
+
+
+
+
+Amritpals-MacBook-Pro:~ MacBookPro$ ssh amrits@uw1-320-03.uwb.edu
+amrits@uw1-320-03.uwb.edu's password: 
+Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.16.0-49-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+27 packages can be updated.
+14 updates are security updates.
+
+*** System restart required ***
+***************************************************************************
+                              NOTICE TO USERS
+			    			    
+This computer system is for authorized academic use only. Users (authorized 
+or unauthorized) have no explicit or implicit expectation of privacy, and 
+misuse may result in disciplinary action. LOG OFF IMMEDIATELY if you do not 
+agree to the conditions stated in this notice.
+
+***************************************************************************
+
+If you need assistance with CSS Technical Issues, please email:
+UWBSTITL@UW.EDU
+
+
+Last login: Sun Jun  5 19:07:39 2016 from c-24-16-102-202.hsd1.wa.comcast.net
+Disk quotas for user amrits (uid 5310): 
+     Filesystem   space   quota   limit   grace   files   quota   limit   grace
+metis.uwb.edu:/usr/apps
+                   306M   4000M   4098M            1798       0       0        
+amrits@uw1-320-03:~$ cd Final_$34/Final
+-bash: cd: Final_4/Final: No such file or directory
+amrits@uw1-320-03:~$ cd Final_334/Final
+-bash: cd: Final_334/Final: No such file or directory
+amrits@uw1-320-03:~$ cd Final_434/Final
+amrits@uw1-320-03:~/Final_434/Final$ java FileClient uw1-320-00 25914
+FileClient: Next file to open
+File name: demoA.txt
+How(r/w): r
+FileClient: Next file to open
+File name: demoA.txt
+How(r/w): r
+FileClient: Next file to open
+File name: demoB.txt
+How(r/w): w
+FileClient: Next file to open
+File name: demoB.txt
+How(r/w): w
+FileClient: Next file to open
+File name: 
+  [Restored Jun 6, 2016, 10:10:13 PM]
+Last login: Mon Jun  6 10:52:23 on ttys003
+Restored session: Mon Jun 6 11:46:36 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 6, 2016, 10:13:31 PM]
+Last login: Mon Jun  6 22:10:17 on ttys004
+Restored session: Mon Jun 6 22:12:11 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 7, 2016, 8:14:07 AM]
+Last login: Tue Jun  7 08:01:34 on console
+Restored session: Mon Jun 6 22:17:44 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 7, 2016, 8:28:43 AM]
+Last login: Tue Jun  7 08:14:09 on ttys004
+Restored session: Tue Jun 7 08:16:31 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 7, 2016, 8:48:18 AM]
+Last login: Tue Jun  7 08:28:51 on ttys004
+Restored session: Tue Jun 7 08:32:17 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ ssh amrits@uw1-320-03.uwb.edu
+amrits@uw1-320-03.uwb.edu's password: 
+Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.16.0-49-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+31 packages can be updated.
+18 updates are security updates.
+
+*** System restart required ***
+***************************************************************************
+                              NOTICE TO USERS
+			    			    
+This computer system is for authorized academic use only. Users (authorized 
+or unauthorized) have no explicit or implicit expectation of privacy, and 
+misuse may result in disciplinary action. LOG OFF IMMEDIATELY if you do not 
+agree to the conditions stated in this notice.
+
+***************************************************************************
+
+If you need assistance with CSS Technical Issues, please email:
+UWBSTITL@UW.EDU
+
+
+Last login: Mon Jun  6 10:52:54 2016 from c-24-16-102-202.hsd1.wa.comcast.net
+Disk quotas for user amrits (uid 5310): 
+     Filesystem   space   quota   limit   grace   files   quota   limit   grace
+metis.uwb.edu:/usr/apps
+                   306M   4000M   4098M            1798       0       0        
+amrits@uw1-320-03:~$ cd Final_434/Final
+amrits@uw1-320-03:~/Final_434/Final$ java FileClient uw1-320-00 25914
+rmi://uw1-320-00:25914/fileserver
+FileClient: Next file to open
+File name: 

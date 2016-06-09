@@ -1,0 +1,437 @@
+ed, or not known
+Amritpals-MacBook-Pro:~ MacBookPro$ ssh amrits@uw1-320-20.uwb.edu
+amrits@uw1-320-20.uwb.edu's password: 
+Last login: Thu Jun  2 10:03:11 2016 from c-24-16-102-202.hsd1.wa.comcast.net
+Disk quotas for user amrits (uid 5310): 
+     Filesystem  blocks   quota   limit   grace   files   quota   limit   grace
+metis.uwb.edu:/usr/apps
+                   306M   4000M   4098M            1798       0       0        
+    metis:/home    306M   4000M   4098M            1798       0       0        
+-bash: /net/metis/home/amrits/.userstats-last-seen-uw1-320-20: Read-only file system
+[amrits@uw1-320-20 ~]$ 
+[amrits@uw1-320-20 ~]$ 
+[amrits@uw1-320-20 ~]$ 
+[amrits@uw1-320-20 ~]$ 
+[amrits@uw1-320-20 ~]$ 
+[amrits@uw1-320-20 ~]$ 
+[amrits@uw1-320-20 ~]$ 
+[amrits@uw1-320-20 ~]$ 
+  [Restored Jun 6, 2016, 10:52:23 AM]
+Last login: Mon Jun  6 10:50:50 on ttys003
+Restored session: Mon Jun 6 10:52:21 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ clear
+
+Amritpals-MacBook-Pro:~ MacBookPro$ ssh amrits@uw1-320-00.uwb.edu
+amrits@uw1-320-00.uwb.edu's password: 
+Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.16.0-49-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+27 packages can be updated.
+14 updates are security updates.
+
+***************************************************************************
+                              NOTICE TO USERS
+			    			    
+This computer system is for authorized academic use only. Users (authorized 
+or unauthorized) have no explicit or implicit expectation of privacy, and 
+misuse may result in disciplinary action. LOG OFF IMMEDIATELY if you do not 
+agree to the conditions stated in this notice.
+
+***************************************************************************
+
+If you need assistance with CSS Technical Issues, please email:
+UWBSTITL@UW.EDU
+
+
+Last login: Sun Jun  5 19:06:59 2016 from c-24-16-102-202.hsd1.wa.comcast.net
+Disk quotas for user amrits (uid 5310): 
+     Filesystem   space   quota   limit   grace   files   quota   limit   grace
+metis.uwb.edu:/usr/apps
+                   306M   4000M   4098M            1798       0       0        
+amrits@uw1-320-00:~$ cd Final_434/Final
+amrits@uw1-320-00:~/Final_434/Final$ javac FileClient.java
+amrits@uw1-320-00:~/Final_434/Final$ javac FileClient.java
+amrits@uw1-320-00:~/Final_434/Final$ java FileServer 25914
+Launching FileServer on port 25914
+RMI: Binding FileServer at: rmi://localhost:25914/fileserver
+Server started!
+Received download request from uw1-320-01 for demoA.txt with mode r
+Checking local cache for demoA.txt
+File not found in local cache, reading from filesystem
+Creating HostedFile for demoA.txt
+Attempting to read file contents...
+File contents read!
+File read from filesystem, placing into local cache
+Registering client uw1-320-01 at port 25914 as a reader
+Changing file state from NOT_SHARED to READ_SHARED
+Registering client uw1-320-01 on port 25914 with new file state of READ_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-01:25914/fileclient
+Client connection made!
+Setting client access mode to READ_SHARED
+Received download request from uw1-320-01 for demoA.txt with mode w
+Deregistering client uw1-320-01 from demoA.txt
+Checking local cache for demoA.txt
+Setting client uw1-320-01 at port 25914 as owner of demoA.txt
+Finding file owner...
+Attempting to locate owner of demoA.txt
+No owner found
+No other client owns this file
+Setting file state to WRITE_SHARED
+Registering client uw1-320-01 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-01:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+uw1-320-01 is registered as owner of demoA.txt
+Client registered to file successfully - returning file
+Received upload request from uw1-320-01 for demoA.txt
+Getting cached copy of file
+Checking local cache for demoA.txt
+File found, checking for proper mode
+Attempting to locate owner of demoA.txt
+Found owner (uw1-320-01) having mode WRITE_SHARED
+File currently owned by uw1-320-01
+Permissions/State check okay - setting new file contents
+Attempting to overwrite demoA.txt
+Attempting to invalidate all client copies of demoA.txt
+Attempting to invalidate cache on client: uw1-320-01
+Client cache invalidation attempt returned false
+Invalidation request for uw1-320-01 results false
+Invalidation failure - forcing to NOT_SHARED
+Cleaning up list of clients sharing this file
+Removing uw1-320-01 from the list
+Overall success of all client invalidations: false
+Setting file state to NOT_SHARED
+Received download request from uw1-320-01 for demoB.txt with mode w
+Deregistering client uw1-320-01 from demoA.txt
+Checking local cache for demoB.txt
+File not found in local cache, reading from filesystem
+Creating HostedFile for demoB.txt
+Attempting to read file contents...
+File contents read!
+File read from filesystem, placing into local cache
+Setting client uw1-320-01 at port 25914 as owner of demoB.txt
+Finding file owner...
+Attempting to locate owner of demoB.txt
+No owner found
+No other client owns this file
+Setting file state to WRITE_SHARED
+Registering client uw1-320-01 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-01:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+uw1-320-01 is registered as owner of demoB.txt
+Client registered to file successfully - returning file
+Received download request from uw1-320-02 for demoA.txt with mode r
+Deregistering client uw1-320-02 from demoA.txt
+Deregistering client uw1-320-02 from demoB.txt
+Checking local cache for demoA.txt
+Registering client uw1-320-02 at port 25914 as a reader
+Changing file state from NOT_SHARED to READ_SHARED
+Registering client uw1-320-02 on port 25914 with new file state of READ_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-02:25914/fileclient
+Client connection made!
+Setting client access mode to READ_SHARED
+Received download request from uw1-320-03 for demoA.txt with mode r
+Deregistering client uw1-320-03 from demoA.txt
+Deregistering client uw1-320-03 from demoB.txt
+Checking local cache for demoA.txt
+Registering client uw1-320-03 at port 25914 as a reader
+Registering client uw1-320-03 on port 25914 with new file state of READ_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-03:25914/fileclient
+Client connection made!
+Setting client access mode to READ_SHARED
+Received upload request from uw1-320-01 for demoB.txt
+Getting cached copy of file
+Checking local cache for demoB.txt
+File found, checking for proper mode
+Attempting to locate owner of demoB.txt
+Found owner (uw1-320-01) having mode WRITE_SHARED
+File currently owned by uw1-320-01
+Permissions/State check okay - setting new file contents
+Attempting to overwrite demoB.txt
+Attempting to invalidate all client copies of demoB.txt
+Attempting to invalidate cache on client: uw1-320-01
+Client cache invalidation attempt returned false
+Invalidation request for uw1-320-01 results false
+Invalidation failure - forcing to NOT_SHARED
+Cleaning up list of clients sharing this file
+Removing uw1-320-01 from the list
+Overall success of all client invalidations: false
+Setting file state to NOT_SHARED
+Received download request from uw1-320-01 for demoA.txt with mode w
+Deregistering client uw1-320-01 from demoA.txt
+Deregistering client uw1-320-01 from demoB.txt
+Checking local cache for demoA.txt
+Setting client uw1-320-01 at port 25914 as owner of demoA.txt
+Finding file owner...
+Attempting to locate owner of demoA.txt
+No owner found
+No other client owns this file
+Setting file state to WRITE_SHARED
+Registering client uw1-320-01 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-01:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+uw1-320-01 is registered as owner of demoA.txt
+Client registered to file successfully - returning file
+Received download request from uw1-320-02 for demoA.txt with mode w
+Deregistering client uw1-320-02 from demoA.txt
+Deregistering client uw1-320-02 from demoB.txt
+Checking local cache for demoA.txt
+Setting client uw1-320-02 at port 25914 as owner of demoA.txt
+Finding file owner...
+Attempting to locate owner of demoA.txt
+Found owner (uw1-320-01) having mode WRITE_SHARED
+Current owner is: uw1-320-01
+Setting file state to OWNERSHIP_CHANGE
+Sending writeback request to client: uw1-320-01
+Writeback request returned true
+Received upload request from uw1-320-01 for demoA.txt
+Getting cached copy of file
+Checking local cache for demoA.txt
+File found, checking for proper mode
+Attempting to locate owner of demoA.txt
+Found owner (uw1-320-01) having mode WRITE_SHARED
+File currently owned by uw1-320-01
+Permissions/State check okay - setting new file contents
+Attempting to overwrite demoA.txt
+Attempting to invalidate all client copies of demoA.txt
+Attempting to invalidate cache on client: uw1-320-01
+Client cache invalidation attempt returned false
+Invalidation request for uw1-320-01 results false
+Invalidation failure - forcing to NOT_SHARED
+Attempting to invalidate cache on client: uw1-320-03
+Client cache invalidation attempt returned true
+Invalidation request for uw1-320-03 results true
+Cleaning up list of clients sharing this file
+Removing uw1-320-01 from the list
+Overall success of all client invalidations: false
+Setting file state to NOT_SHARED
+Setting file state to WRITE_SHARED
+Registering client uw1-320-02 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-02:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+Client registered to file successfully - returning file
+Received download request from uw1-320-03 for demoA.txt with mode r
+Deregistering client uw1-320-03 from demoA.txt
+Deregistering client uw1-320-03 from demoB.txt
+Checking local cache for demoA.txt
+Registering client uw1-320-03 at port 25914 as a reader
+Registering client uw1-320-03 on port 25914 with new file state of READ_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-03:25914/fileclient
+Client connection made!
+Setting client access mode to READ_SHARED
+Received download request from uw1-320-01 for demoB.txt with mode w
+Deregistering client uw1-320-01 from demoA.txt
+Deregistering client uw1-320-01 from demoB.txt
+Checking local cache for demoB.txt
+Setting client uw1-320-01 at port 25914 as owner of demoB.txt
+Finding file owner...
+Attempting to locate owner of demoB.txt
+No owner found
+No other client owns this file
+Setting file state to WRITE_SHARED
+Registering client uw1-320-01 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-01:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+uw1-320-01 is registered as owner of demoB.txt
+Client registered to file successfully - returning file
+Received upload request from uw1-320-02 for demoA.txt
+Getting cached copy of file
+Checking local cache for demoA.txt
+File found, checking for proper mode
+Attempting to locate owner of demoA.txt
+Found owner (uw1-320-02) having mode WRITE_SHARED
+File currently owned by uw1-320-02
+Permissions/State check okay - setting new file contents
+Attempting to overwrite demoA.txt
+Attempting to invalidate all client copies of demoA.txt
+Attempting to invalidate cache on client: uw1-320-02
+Client cache invalidation attempt returned false
+Invalidation request for uw1-320-02 results false
+Invalidation failure - forcing to NOT_SHARED
+Attempting to invalidate cache on client: uw1-320-03
+Client cache invalidation attempt returned true
+Invalidation request for uw1-320-03 results true
+Cleaning up list of clients sharing this file
+Removing uw1-320-02 from the list
+Overall success of all client invalidations: false
+Setting file state to NOT_SHARED
+Received download request from uw1-320-02 for demoB.txt with mode w
+Deregistering client uw1-320-02 from demoA.txt
+Deregistering client uw1-320-02 from demoB.txt
+Checking local cache for demoB.txt
+Setting client uw1-320-02 at port 25914 as owner of demoB.txt
+Finding file owner...
+Attempting to locate owner of demoB.txt
+Found owner (uw1-320-01) having mode WRITE_SHARED
+Current owner is: uw1-320-01
+Setting file state to OWNERSHIP_CHANGE
+Sending writeback request to client: uw1-320-01
+Writeback request returned true
+Received download request from uw1-320-03 for demoB.txt with mode w
+Deregistering client uw1-320-03 from demoA.txt
+Deregistering client uw1-320-03 from demoB.txt
+Checking local cache for demoB.txt
+Setting client uw1-320-03 at port 25914 as owner of demoB.txt
+Finding file owner...
+Attempting to locate owner of demoB.txt
+Found owner (uw1-320-01) having mode WRITE_SHARED
+Current owner is: uw1-320-01
+Setting file state to OWNERSHIP_CHANGE
+Sending writeback request to client: uw1-320-01
+Writeback request returned false
+Unable to register client, returning NULL
+Received upload request from uw1-320-01 for demoB.txt
+Getting cached copy of file
+Checking local cache for demoB.txt
+File found, checking for proper mode
+Attempting to locate owner of demoB.txt
+Found owner (uw1-320-01) having mode WRITE_SHARED
+File currently owned by uw1-320-01
+Permissions/State check okay - setting new file contents
+Attempting to overwrite demoB.txt
+Attempting to invalidate all client copies of demoB.txt
+Attempting to invalidate cache on client: uw1-320-01
+Client cache invalidation attempt returned false
+Invalidation request for uw1-320-01 results false
+Invalidation failure - forcing to NOT_SHARED
+Cleaning up list of clients sharing this file
+Removing uw1-320-01 from the list
+Overall success of all client invalidations: false
+Setting file state to NOT_SHARED
+Setting file state to WRITE_SHARED
+Registering client uw1-320-02 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-02:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+Client registered to file successfully - returning file
+Received download request from uw1-320-03 for demoB.txt with mode w
+Deregistering client uw1-320-03 from demoA.txt
+Deregistering client uw1-320-03 from demoB.txt
+Checking local cache for demoB.txt
+Setting client uw1-320-03 at port 25914 as owner of demoB.txt
+Finding file owner...
+Attempting to locate owner of demoB.txt
+Found owner (uw1-320-02) having mode WRITE_SHARED
+Current owner is: uw1-320-02
+Setting file state to OWNERSHIP_CHANGE
+Sending writeback request to client: uw1-320-02
+Writeback request returned true
+Received download request from uw1-320-02 for demoB.txt with mode w
+Deregistering client uw1-320-02 from demoA.txt
+Deregistering client uw1-320-02 from demoB.txt
+Checking local cache for demoB.txt
+Setting client uw1-320-02 at port 25914 as owner of demoB.txt
+Finding file owner...
+Attempting to locate owner of demoB.txt
+No owner found
+No other client owns this file
+Setting file state to WRITE_SHARED
+Registering client uw1-320-02 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-02:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+uw1-320-02 is registered as owner of demoB.txt
+Client registered to file successfully - returning file
+Received upload request from uw1-320-02 for demoB.txt
+Getting cached copy of file
+Checking local cache for demoB.txt
+File found, checking for proper mode
+Attempting to locate owner of demoB.txt
+Found owner (uw1-320-02) having mode WRITE_SHARED
+File currently owned by uw1-320-02
+Permissions/State check okay - setting new file contents
+Attempting to overwrite demoB.txt
+Attempting to invalidate all client copies of demoB.txt
+Attempting to invalidate cache on client: uw1-320-02
+Client cache invalidation attempt returned false
+Invalidation request for uw1-320-02 results false
+Invalidation failure - forcing to NOT_SHARED
+Cleaning up list of clients sharing this file
+Removing uw1-320-02 from the list
+Overall success of all client invalidations: false
+Setting file state to NOT_SHARED
+Setting file state to WRITE_SHARED
+Registering client uw1-320-03 on port 25914 with new file state of WRITE_SHARED
+Client was not previously using this file, adding to list
+Attempting to connect to client at: rmi://uw1-320-03:25914/fileclient
+Client connection made!
+Setting client access mode to WRITE_SHARED
+Client registered to file successfully - returning file
+
+  [Restored Jun 6, 2016, 10:10:13 PM]
+Last login: Mon Jun  6 10:52:23 on ttys003
+Restored session: Mon Jun 6 11:46:36 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 6, 2016, 10:13:31 PM]
+Last login: Mon Jun  6 22:10:17 on ttys004
+Restored session: Mon Jun 6 22:12:11 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 7, 2016, 8:14:07 AM]
+Last login: Tue Jun  7 08:01:34 on console
+Restored session: Mon Jun 6 22:17:44 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 7, 2016, 8:28:43 AM]
+Last login: Tue Jun  7 08:14:09 on ttys004
+Restored session: Tue Jun 7 08:16:31 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ 
+  [Restored Jun 7, 2016, 8:48:18 AM]
+Last login: Tue Jun  7 08:28:51 on ttys004
+Restored session: Tue Jun 7 08:32:17 PDT 2016
+Amritpals-MacBook-Pro:~ MacBookPro$ ssh amrits@uw1-320-00.uwb.edu
+amrits@uw1-320-00.uwb.edu's password: 
+Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.16.0-49-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+31 packages can be updated.
+18 updates are security updates.
+
+***************************************************************************
+                              NOTICE TO USERS
+			    			    
+This computer system is for authorized academic use only. Users (authorized 
+or unauthorized) have no explicit or implicit expectation of privacy, and 
+misuse may result in disciplinary action. LOG OFF IMMEDIATELY if you do not 
+agree to the conditions stated in this notice.
+
+***************************************************************************
+
+If you need assistance with CSS Technical Issues, please email:
+UWBSTITL@UW.EDU
+
+
+Last login: Mon Jun  6 10:52:41 2016 from c-24-16-102-202.hsd1.wa.comcast.net
+Disk quotas for user amrits (uid 5310): 
+     Filesystem   space   quota   limit   grace   files   quota   limit   grace
+metis.uwb.edu:/usr/apps
+                   306M   4000M   4098M            1789       0       0        
+
+Active processes on uw1-320-00 for user amrits:
+  PID TT       %CPU %MEM     TIME COMMAND
+24760 ?         0.0  0.0 00:00:00 sshd: amrits@notty  
+24764 ?         0.0  0.0 00:00:00 /usr/lib/openssh/sftp-server
+
+amrits@uw1-320-00:~$ cd Final_434/Final
+amrits@uw1-320-00:~/Final_434/Final$ javac FileServer.java
+amrits@uw1-320-00:~/Final_434/Final$ javac FileClient.java
+amrits@uw1-320-00:~/Final_434/Final$ java FileServer 25914
+Launching FileServer on port 25914
+RMI: Binding FileServer at: rmi://localhost:25914/fileserver
+Server started!
+
